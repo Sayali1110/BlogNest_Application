@@ -17,7 +17,7 @@ interface ArticlePageProps {
 const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
   return (
     <>
-      {articles.map((article, index) => (
+      {!articles? "":articles.map((article, index) => (
         <Card
           key={index}
           variant="outlined"

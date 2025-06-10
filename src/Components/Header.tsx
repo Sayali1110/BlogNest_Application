@@ -8,9 +8,11 @@ const Header = () => {
             <Box
                 sx={{
                     backgroundColor: "#e91e63",
-                    py: 5,
+                    py: 7,
+                    mt:0,
                     textAlign: "center",
                     borderBottom: "1px solid #ddd",
+            
                 }}
             >
                 <Typography variant="h3" fontWeight="bold" color="#f3f3f3"

@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
-  Typography,
   Tabs,
   Tab,
   Stack,
@@ -14,7 +13,6 @@ import { getArticles } from "../../Services/getArticles";
 import type { ArticleResponse } from "../../interfaces";
 import TagPage from "./TagPage";
 import ArticlePage from "./ArticlePage";
-import Link from "@mui/icons-material/Link";
 import Header from "../../Header";
 import { UserContext } from "../../../App";
 
@@ -28,9 +26,8 @@ const Home: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
 
-   const user = useContext(UserContext);
-   console.log(user,"user Is from context")
-    
+  const userInfo = useContext(UserContext);
+
   const handlePages = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
@@ -43,7 +40,6 @@ const Home: React.FC = () => {
   };
 
   const fetchArticles = async () => {
-    //setLoading(true);
     try {
       const offset = (page - 1) * articleOnOnePage;
       let articleResponse: ArticleResponse;
@@ -62,7 +58,6 @@ const Home: React.FC = () => {
   };
 
   const fetchTags = async () => {
-   // setLoading(true);
     try {
       const tagResponse: any = await getTags();
       setTags(tagResponse?.tags);
@@ -82,7 +77,7 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <Box mt={4.1} sx={{ overflowX: "hidden" }}>
+    <Box sx={{ overflowX: "hidden" }}>
 
       {loading ? (
         <Box
@@ -92,15 +87,15 @@ const Home: React.FC = () => {
           minHeight="300px"
         >
           <CircularProgress />
-
         </Box>
       ) : (
         <>
           <Header />
 
-          <Tabs value={!tagSelected ? 0 : 1}>
-            <Tab label="Global Feed" onClick={() => handleReset()} />
-            {tagSelected && <Tab label={tagSelected} />}
+          <Tabs value={userInfo?.isAuth ? 0 : !tagSelected ? 1 : 2}>
+            {userInfo?.isAuth && <Tab label="Your Feed" sx={{color:"#e91e63"}} />}
+            <Tab label="Global Feed" onClick={() => handleReset()} sx={{color:"#e91e63"}}   />
+            {tagSelected && <Tab label={tagSelected} sx={{color:"#e91e63"}}/>}
           </Tabs>
 
           <Box width="100%" display="flex" justifyContent="space-between" gap={2}>
@@ -146,10 +141,6 @@ const Home: React.FC = () => {
                 <TagPage tags={tags} handleTags={handleTags} />
 
               </Box>)}
-
-
-
-
 
           </Box>
         </>

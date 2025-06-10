@@ -28,3 +28,13 @@ export interface itags{
   tags: string[];
 }
 
+export interface user{
+  bio:string;
+  emmail:string;
+  image:string;
+  token:string;
+  username: string;
+}
+
+ 
+

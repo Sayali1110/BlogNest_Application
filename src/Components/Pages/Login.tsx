@@ -1,15 +1,36 @@
+import { Password } from '@mui/icons-material';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { userLogin } from '../Services/userLogin';
 
-const Login: React.FC = () => {
+type SignIpProps = {
+  setUserData: (userData: any) => void;
+};
+
+const Login: React.FC<SignIpProps> = ({setUserData}) => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [pass, setPass] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const loginDetails = () => {
-    alert(`Username: ${username} \nPassword: ${pass}`);
+    alert(`Email: ${email} \nPassword: ${password}`);
   };
+
+  const login = async () =>{
+ try{
+  const loginResponse = await userLogin(email, password);
+  setUserData(loginResponse);
+   navigate("/")
+ }
+ catch(error){
+  console.error(error);
+ }   
+  }
+
+  // const handlePasswordChange = e =>{
+  //   setPassword(e.target.value);
+  // }
 
   return (
     <Box
@@ -37,6 +58,7 @@ const Login: React.FC = () => {
           padding: 5,
         }}
       >
+
         <Typography variant="h4" fontWeight="bold" color="#e91e63" textAlign="center" p={0.5}>
           Login
         </Typography>
@@ -54,27 +76,31 @@ const Login: React.FC = () => {
           Need an account? Sign up
         </Typography>
 
+
         <TextField
-          label="Username"
+          label="email"
           fullWidth
           variant="outlined"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          
         />
 
         <TextField
+
           label="Password"
           type="password"
           fullWidth
           variant="outlined"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
+          value={password}
+         onChange={(e) => setPassword(e.target.value)}
+        // onChange = {(e) => handlePasswordChange}
         />
 
         <Button
           variant="contained"
           fullWidth
-          onClick={loginDetails}
+          onClick={login}
           sx={{
             backgroundColor: '#e91e63',
             color: 'white',

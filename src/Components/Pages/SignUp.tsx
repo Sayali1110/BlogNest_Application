@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router';
 import { userRegistration } from '../Services/userRegistration';
 import { Password } from '@mui/icons-material';
 
-
 type SignUpProps = {
   setUserData: (userData: any) => void;
 };
@@ -15,27 +14,23 @@ type SignUpProps = {
 const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [pass, setPass] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const details = () => {
-    alert(`Email: ${email} \nUsername: ${username} \nPassword: ${pass}`);
+    alert(`\nUsername: ${username} Email: ${email}  \nPassword: ${password}`);
   };
 
   const userReg = async () =>{
     try{
-      const userResopnse =await userRegistration(username,email, pass);
-      console.log(userResopnse,"rrespon")
+      const userResopnse = await userRegistration(username,email, password);
       setUserData(userResopnse)
    navigate("/")
     }
     catch(error){
       console.error(error);
-
     }
   }
-
-  
 
   return (
     <Box
@@ -100,12 +95,12 @@ const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
         />
 
         <TextField
-          label="Create_Password"
+          label="Create Password"
           type="password"
           fullWidth
           variant="outlined"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <Button
