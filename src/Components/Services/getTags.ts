@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Main_URL } from "../constants";
-import { useState } from "react";
 
 export const getTags = async () => {
   try {

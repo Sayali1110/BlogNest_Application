@@ -8,26 +8,71 @@ import { userRegistration } from '../Services/userRegistration';
 import { Password } from '@mui/icons-material';
 
 type SignUpProps = {
-  setUserData: (userData: any) => void;
+  setUserData: (userData: any, isAuth?: boolean) => void;
 };
 
-const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
+const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
   const navigate = useNavigate();
 
   const details = () => {
     alert(`\nUsername: ${username} Email: ${email}  \nPassword: ${password}`);
   };
 
-  const userReg = async () =>{
-    try{
-      const userResopnse = await userRegistration(username,email, password);
-      setUserData(userResopnse)
-   navigate("/")
+  const validate = () => {
+    let isValid = true;
+
+    if (!username) {
+      setUsernameError("Username is required");
+      isValid = false;
+    } else if (username.length < 6) {
+      setUsernameError("Username must be at least 6 characters");
+      isValid = false;
+    } else {
+      setUsernameError("");
     }
-    catch(error){
+
+    if (!email) {
+      setEmailError("Email is required");
+      isValid = false;
+    } else if ("@".includes(email)) {
+      setEmailError("Invalid email format");
+      isValid = false;
+    } else {
+      setEmailError("");
+    }
+
+    if (!password) {
+      setPasswordError("Password is required");
+      isValid = false;
+    } else if (password.length < 5) {
+      setPasswordError("Password must be at least 5 characters");
+      isValid = false;
+    } else {
+      setPasswordError("");
+    }
+    return isValid;
+  };
+
+  const userReg = async () => {
+    if (!validate()) return;
+    try {
+      const userResopnse = await userRegistration(username, email, password);
+      console.log("signup", userResopnse);
+      console.log("user signuop token", userResopnse?.user.token )
+       if (userResopnse?.user.token) {
+       setUserData(userResopnse, true);
+        navigate("/");
+      }
+    }
+    catch (error) {
       console.error(error);
     }
   }
@@ -39,9 +84,9 @@ const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
       display="flex"
       justifyContent="center"
       minHeight="92vh"
-      width="100vw"
+      width="93.8vw"
       sx={{
-        background: "linear-gradient(to right, #f8bbd0, #fce4ec)", 
+        background: "linear-gradient(to right, #f8bbd0, #fce4ec)",
         padding: 2,
       }}
     >
@@ -58,7 +103,6 @@ const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
           boxShadow: "0 6px 30px rgba(0,0,0,0.1)",
           p: 5,
         }}
-        // onSubmit={handleSubmit}
       >
         <Typography variant="h4" fontWeight="bold" color="#e91e63" textAlign="center">
           Sign Up
@@ -82,16 +126,19 @@ const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
           variant="outlined"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          error={!!usernameError}
+          helperText={usernameError}
         />
 
         <TextField
-        // required ="Required" 
           label="Email"
           type="email"
           fullWidth
           variant="outlined"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          error={!!emailError}
+          helperText={emailError}
         />
 
         <TextField
@@ -101,6 +148,8 @@ const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
           variant="outlined"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          error={!!passwordError}
+          helperText={passwordError}
         />
 
         <Button
@@ -116,7 +165,7 @@ const SignUp: React.FC <SignUpProps>= ({setUserData}) => {
               backgroundColor: "#f06292",
             },
           }}
-          onClick={userReg} 
+          onClick={userReg}
         >
           Create Account
         </Button>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, type SyntheticEvent } from "react";
 import {
   Box,
   Tabs,
@@ -6,6 +6,7 @@ import {
   Stack,
   Pagination,
   CircularProgress,
+  Typography,
 } from "@mui/material";
 
 import { getTags } from "../../Services/getTags";
@@ -16,42 +17,75 @@ import ArticlePage from "./ArticlePage";
 import Header from "../../Header";
 import { UserContext } from "../../../App";
 
-const Home: React.FC = () => {
+type Props = {
+  setUserData: (userData: any, isAuth?: boolean) => void;
+};
+
+const Home: React.FC<Props> = ({ setUserData }) => {
   const [page, setPage] = useState(1);
+  const userInfo = useContext(UserContext);
   const [articles, setArticles] = useState<any[]>([]); // articles on one page
   const articleOnOnePage = 3;
   const [articleCount, setArticleCount] = useState<number>(0);
   const [tags, setTags] = useState<string[]>([]);
-  const [tagSelected, setTagSelected] = useState("");
-
+  const [selectedTag, setSelectedTag] = useState("");
+  const [selectedTab, setselectedTab] = useState(-1);
+ 
   const [loading, setLoading] = useState(true);
-
-  const userInfo = useContext(UserContext);
 
   const handlePages = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
   const handleTags = (value: string) => {
-    setTagSelected(value);
+    setSelectedTag(value);
+    setselectedTab(2)
   };
+
   const handleReset = () => {
+    if (userInfo?.isAuth) {
+      setselectedTab(0);
+    } else {
+      setselectedTab(1);
+    }
     setPage(1);
-    setTagSelected("");
+    setSelectedTag("");
+  };
+  
+  const changeTab = (event: React.SyntheticEvent, value: number) => {
+    setPage(1);
+    setselectedTab(value);
+    if (value !== 2) {
+      setSelectedTag("");
+    }
   };
 
   const fetchArticles = async () => {
+
     try {
       const offset = (page - 1) * articleOnOnePage;
       let articleResponse: ArticleResponse;
-      if (!tagSelected) {
-        articleResponse = await getArticles(offset, articleOnOnePage);
-      } else {
-        articleResponse = await getArticles(offset, articleOnOnePage, tagSelected);
+
+      if (selectedTab === 0 && userInfo?.isAuth) {
+        articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, true);
       }
-      setArticles(articleResponse?.articles);
-      setArticleCount(articleResponse?.articlesCount);
+      else if (selectedTab === 1) {
+        articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, false);
+      }
+      else if (selectedTab === 2 && selectedTag) {
+        articleResponse = await getArticles(offset, articleOnOnePage, selectedTag, userInfo?.user?.token, false);
+      }
+      else {
+        return;
+      }
+
+      setArticles(articleResponse?.articles || []);
+      setArticleCount(articleResponse?.articlesCount || 0);
+
+
     } catch (error) {
       console.error("Error fetching articles:", error);
+      setArticles([]);
+      setArticleCount(0);
     } finally {
       setLoading(false);
     }
@@ -69,19 +103,26 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchArticles();
-  }, [tagSelected, page]);
-
-  useEffect(() => {
     fetchTags();
   }, []);
 
-  return (
-    <Box sx={{ overflowX: "hidden" }}>
+ useEffect(() => {
+  if (userInfo?.isAuth !== undefined) {
+    setselectedTab(userInfo?.isAuth ? 0 : 1);
+    setPage(1);
+  }
+}, [userInfo?.isAuth]);
 
-      {loading ? (
+useEffect(() => {
+  if (selectedTab !== -1) {
+    fetchArticles();
+  }
+}, [selectedTag, page, selectedTab]); 
+  return (
+    <Box >
+      {(loading || selectedTab === -1) ? (
         <Box
-          display="flex"
+        //  display="flex"
           justifyContent="center"
           alignItems="center"
           minHeight="300px"
@@ -91,11 +132,10 @@ const Home: React.FC = () => {
       ) : (
         <>
           <Header />
-
-          <Tabs value={userInfo?.isAuth ? 0 : !tagSelected ? 1 : 2}>
-            {userInfo?.isAuth && <Tab label="Your Feed" sx={{color:"#e91e63"}} />}
-            <Tab label="Global Feed" onClick={() => handleReset()} sx={{color:"#e91e63"}}   />
-            {tagSelected && <Tab label={tagSelected} sx={{color:"#e91e63"}}/>}
+          <Tabs value={selectedTab} onChange={changeTab} >
+            {userInfo?.isAuth && <Tab label="Your Feed" sx={{ color: "#8bc34a" }} value={0} />}
+            <Tab label="Global Feed" sx={{ color: "#8bc34a" }} value={1} />
+            {selectedTag && <Tab label={selectedTag} sx={{ color: "#8bc34a" }} value={2} />}
           </Tabs>
 
           <Box width="100%" display="flex" justifyContent="space-between" gap={2}>
@@ -111,7 +151,8 @@ const Home: React.FC = () => {
 
             </Box>) : (<Box flex={3}>
               <ArticlePage articles={articles} />
-              <Box>
+
+              {articles.length > 0 ? (<Box>
                 <Stack spacing={2}>
                   <Pagination
                     count={Math.ceil(articleCount / articleOnOnePage)}
@@ -119,7 +160,8 @@ const Home: React.FC = () => {
                     page={page}
                   />
                 </Stack>
-              </Box>
+              </Box>) : (<Typography align="left" padding={2} marginLeft={-2}>Articles not available</Typography>)}
+
             </Box>)}
 
             {loading ? (<Box
@@ -139,9 +181,7 @@ const Home: React.FC = () => {
                 }}
               >
                 <TagPage tags={tags} handleTags={handleTags} />
-
               </Box>)}
-
           </Box>
         </>
       )}

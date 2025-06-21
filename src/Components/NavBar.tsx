@@ -1,42 +1,68 @@
-import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Button, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
 
-import React, { useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-const NavBar: React.FC = () => {
+type Props = {
+    setUserData: (userData: any, isAuth?: boolean) => void;
+};
 
+const NavBar: React.FC<Props> = ({ setUserData }) => {
     const location = useLocation();
     const userInfo = useContext(UserContext);
-    console.log(userInfo, "user Is from context")
+    const navigate = useNavigate();
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleMenuOpen = (event: any) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    console.log("user Is from context", userInfo)
+
+    const Logout = () => {
+        localStorage.removeItem("loggedUser");
+        setUserData(null, false);
+        navigate("/");
+    }
+
     return (
-        <AppBar sx={{ backgroundColor: "white", color: "pink" }}>
+        <AppBar  sx={{ backgroundColor: "white", color: "pink" }}>
             <Toolbar>
                 <Typography
                     variant="h6"
                     sx={{
                         flexGrow: 1,
-                        color: "#e91e63",
+                        color: "#8bc34a",
                         fontWeight: 700,
                         textAlign: "left",
                         minWidth: 100,
                         "&:hover": {
-                            color: "#d81b60"
+                            color: "#4db6ac"
                         }
                     }}
                     component={Link} to="/"
                 >
-                    Sharelit
+                    Blognest
                 </Typography>
 
-                <Box display={"flex"} gap="2">
+                <Box display="flex" alignItems="center">
                     <Button component={Link} to="/"
                         sx={{
-                            backgroundColor: location.pathname === "/" ? "#e91e63" : "transparent",
-                            color: location.pathname === "/" ? "white" : "#e91e63",
+                            px: 2,
+                            py: 1,
+                            backgroundColor: location.pathname === "/" ? "#8bc34a" : "transparent",
+                            color: location.pathname === "/" ? "white" : "#7cb342",
                             "&:hover": {
                                 backgroundColor: "#fdecef",
-                                color: "#880e4f",
+                                color: "#33691e",
                             },
                         }}
                     >
@@ -45,54 +71,82 @@ const NavBar: React.FC = () => {
 
                     {userInfo?.isAuth ? (
                         <>
-                            <Button sx={{ color: '#e91e63'}}>
+                            <Button component={Link} to="/newArticle"
+                                sx={{ color: '#8bc34a' }}>
                                 New Article
                             </Button>
-
                         </>
+                    ) : (
+                        <Button component={Link} to='/login'
+                            sx={{
+                                backgroundColor: location.pathname === "/login" ? "#8bc34a" : "transparent",
+                                color: location.pathname === "/login" ? "white" : "#689f38",
+                                "&:hover": {
+                                    backgroundColor: "#fdecef",
+                                    color: "#33691e",
+                                },
+                            }}
+                        >
+                            Login
+                        </Button>
+                    )}
 
-                    ) : (<Button component={Link} to='/login'
-                        sx={{
-                            backgroundColor: location.pathname === "/login" ? "#e91e63" : "transparent",
-                            color: location.pathname === "/login" ? "white" : "#e91e63",
-                            "&:hover": {
-                                backgroundColor: "#fdecef",
-                                color: "#880e4f",
-                            },
-                        }}
-                    >
-                        Login
-                    </Button>)}
 
                     {userInfo?.isAuth ? (
-                        <>
-                              <Button sx={{ color: '#e91e63'}}>
-                                Profile
-                               { userInfo.user.username}
+                        <Box display="flex" alignItems="center" gap={1}>
+                            <Button
+                                onClick={handleMenuOpen}
+                                sx={{ textTransform: 'none', color: '#8bc34a' }}
+                                startIcon={
+                                    userInfo?.user?.user?.image ? (
+                                        <Avatar  src={userInfo.user.user.image} />
+                                    ) : (
+                                        <Avatar sx={{ backgroundColor: '#8bc34a'}}>
+                                            {userInfo?.user?.user?.username[0]}
+                                        </Avatar>
+                                    )
+                                }
+                            >
+                                <Typography>  {userInfo?.user?.user?.username}</Typography>
+                                <Typography fontSize="large"> ▼</Typography>
                             </Button>
-                        </>
 
-                    ) : (<Button component={Link} to="/signup"
-                        sx={{
-                            backgroundColor: location.pathname === "/signup" ? "#e91e63" : "transparent",
-                            color: location.pathname === "/signup" ? "white" : "#e91e63",
-                            "&:hover": {
-                                backgroundColor: "#fdecef",
-                                color: "#880e4f",
-                            },
-                        }}
-                    >
-                        Sign Up
-                    </Button>)}
-
-
-
-
-
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleMenuClose}
+                                PaperProps={{
+                                    sx: { width: 200 },
+                                }}
+                            >
+                                <MenuItem onClick={() => { handleMenuClose()}}>Profile</MenuItem>
+                                <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+                                <MenuItem onClick={() => { handleMenuClose(); Logout(); }}>
+                                    Logout
+                                </MenuItem>
+                            </Menu>
+                        </Box>
+                    ) : (
+                        <Button
+                            component={Link}
+                            to="/signup"
+                            sx={{
+                                backgroundColor: location.pathname === '/signup' ? '#689f38' : 'transparent',
+                                color: location.pathname === '/signup' ? 'white' : '#7cb342',
+                                '&:hover': {
+                                    backgroundColor: '#fdecef',
+                                    color: '#33691e',
+                                },
+                            }}
+                        >
+                            Sign Up
+                        </Button>
+                    )}
 
                 </Box>
             </Toolbar>
         </AppBar>
+        
     );
 }
 export default NavBar;

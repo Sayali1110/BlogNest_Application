@@ -1,3 +1,16 @@
+/* Reset margin and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  display: block;
+  background-color: #fff; /* optional: set your default bg */
+}
 #root {
   max-width: 1280px;
   margin: 0 auto;

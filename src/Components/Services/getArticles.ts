@@ -1,22 +1,30 @@
 import axios from "axios";
 import { Main_URL } from "../constants";
+import { useContext } from "react";
+import { UserContext } from "../../App";
 
-export const getArticles = async (page:number, articleOnOnePage:number,tag?:string) => {
-    try {
-     
-      let parameters:any={
-          tag:tag,
-          limit: articleOnOnePage,
-          offset: page,
-        }
-        
-      const response = await axios.get(`${Main_URL}/articles`, {
-        params: parameters
-      });
-      console.log('Articles data:', response.data);
-      return response.data;
-    } catch (error:any) {
-      console.error('Error fetching data:', error.message);
-      throw error;
+export const getArticles = async (page: number, articleOnOnePage: number, tag?: string, token?: string, isFeed?: boolean) => {
+
+  try {
+    let parameters: any = {
+      tag: tag,
+      limit: articleOnOnePage,
+      offset: page,
     }
+
+    const headers = token ? { Authorization: `Token ${token}` } : {};
+
+    const url = isFeed ? `${Main_URL}/articles/feed` : `${Main_URL}/articles`;
+
+    const response = await axios.get(url, {
+      params: parameters,
+      headers,
+    });
+
+    console.log('Articles data:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching data:', error.message);
+    throw error;
+  }
 };

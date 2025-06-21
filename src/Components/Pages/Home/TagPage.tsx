@@ -1,5 +1,4 @@
 import { Box, Button, Chip, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
 
 const TagPage: React.FC<any> = ({
   tags,

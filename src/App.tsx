@@ -1,41 +1,64 @@
-import { createContext, useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
+import { createContext, useEffect, useState } from 'react'
+
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import NavBar from './Components/NavBar'
 import Home from './Components/Pages/Home/Home'
 import Login from './Components/Pages/Login'
 import SignUp from './Components/Pages/SignUp'
+import { NewArticlePage } from './Components/Pages/NewArticlePage'
+import { ReadMorePage } from './Components/Pages/ReadMorePage'
 
 export const UserContext = createContext<any>(null);
 function App() {
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>({ isAuth: false, user: null });
 
-  const setUserData = (userData: any) => {
-    const loggedUser = {
-      isAuth: true,
-      user: userData
+  const setUserData = (userData: any, isAuth?: boolean) => {
+    let loggedUser;
+    if (!isAuth) {
+      loggedUser = {
+        isAuth: false,
+        user: null,
+      };
+      localStorage.removeItem("token");
+    } else {
+      loggedUser = {
+        isAuth: true,
+        user: userData, 
+      };
+      if (userData?.token) {
+        localStorage.setItem("token", userData.token); 
+      }
     }
-    console.log(loggedUser, "loggedUser")
-    setUser(loggedUser)
 
-     localStorage.setItem("log in info saved", JSON.stringify(loggedUser))
-  }
+    setUser(loggedUser);
+    localStorage.setItem("log in info saved", JSON.stringify(loggedUser));
+  };
+
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("log in info saved");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   return (
     <>
       <UserContext.Provider value={user}>
         <BrowserRouter>
-          <NavBar />
+          <NavBar setUserData={setUserData} />
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home setUserData={setUserData} />} />
             <Route path='/login' element={<Login setUserData={setUserData} />} />
             <Route path='/signup' element={<SignUp setUserData={setUserData} />} />
+            <Route path='/newArticle' element={<NewArticlePage />} />
+            <Route path="/article/:slug" element={<ReadMorePage setUserData={setUserData} />} />
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
+     
     </>
   )
 }
