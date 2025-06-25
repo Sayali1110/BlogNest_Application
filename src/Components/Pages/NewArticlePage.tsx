@@ -6,9 +6,10 @@ import {
   Typography,
 } from "@mui/material";
 import { postNewArticle } from "../Services/postNewArticle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Main_URL } from "../constants";
+import { updateArticle } from "../Services/updateArticle";
 
 export const NewArticlePage = () => {
   const [slug, setSlug] = useState("");
@@ -19,7 +20,7 @@ export const NewArticlePage = () => {
 
   let navigate = useNavigate();
   const location = useLocation();
-  const article = location.state?.article;
+  const existingArticle = location.state?.article;
 
   const [errors, setErrors] = useState({
     title: "",
@@ -48,18 +49,46 @@ export const NewArticlePage = () => {
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
 
-    try {
-      const postedArticle = await postNewArticle(body, description, tagList, title);
-      console.log("Article posted:", postedArticle);
-      const slug = postedArticle.slug;
-      console.log("slug from new", slug)
-     navigate(`/article/${slug}`, { state: { article: postedArticle } });
-     
-    } catch (error: any) {
-      const backendError = error?.response?.data?.errors?.body?.[0];
-      setError(backendError || "Error posting article.");
+    if (!existingArticle) {
+      try {
+        const postedArticle = await postNewArticle(body, description, tagList, title);
+        console.log("Article posted:", postedArticle);
+        const slug = postedArticle.slug;
+        console.log("slug from new", slug)
+        navigate(`/article/${slug}`, { state: { article: postedArticle } });
+
+      } catch (error: any) {
+        const backendError = error?.response?.data?.errors?.body?.[0];
+        setError(backendError || "Error posting article.");
+      }
     }
+    else {
+      try {
+        const updatedArticle = await updateArticle(existingArticle.slug, {
+          title,
+          description,
+          body,
+          tagList,
+        });
+        console.log("Article updated:", updatedArticle);
+        navigate(`/article/${updatedArticle.slug}`, { state: { article: updatedArticle } });
+      } catch (error: any) {
+        const backendError = error?.response?.data?.errors?.body?.[0];
+        setError(backendError || "Error updating article.");
+      }
+    }
+
   }
+
+  useEffect(() => {
+    if (existingArticle) {
+      setTitle(existingArticle.title || '');
+      setDescription(existingArticle.description || '');
+      setBody(existingArticle.body || '');
+      setTagInput(existingArticle.tagList?.join(', ') || '');
+    }
+  }, [existingArticle]);
+
   return (
     <Box
       minHeight="100vh"
@@ -122,21 +151,46 @@ export const NewArticlePage = () => {
           value={tagInput}
           onChange={(e) => setTagInput(e.target.value)}
         />
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#e91e63",
-              color: "#fff",
-              "&:hover": {
-                backgroundColor: "#d81b60",
-              },
-            }}
-            onClick={handleSubmit}
-          >
-            PUBLISH ARTICLE
-          </Button>
-        </Box>
+
+        {existingArticle ?
+          (<Box display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#689f38",
+                color: "white",
+                borderRadius: "8px",
+                textTransform: "none",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#aed581",
+                },
+              }}
+              onClick={handleSubmit}
+            >
+              UPDATE ARTICLE
+            </Button>
+          </Box>) : (
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#689f38",
+                  color: "white",
+                  borderRadius: "8px",
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundColor: "#aed581",
+                  },
+                }}
+                onClick={handleSubmit}
+              >
+                PUBLISH ARTICLE
+              </Button>
+            </Box>
+          )}
+
       </Box>
     </Box>
   );

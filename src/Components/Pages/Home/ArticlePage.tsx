@@ -1,4 +1,4 @@
-import React, { createContext, use, useState } from "react";
+import React, { createContext, use, useContext, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -9,11 +9,15 @@ import {
   Button,
   Chip,
 } from "@mui/material";
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import type { Article } from "../../interfaces";
 import { Link, Navigate } from "react-router-dom";
 import { ReadMorePage } from "../ReadMorePage";
 import { postFavorite } from "../../Services/postFavorite";
+import { UserContext } from "../../../App";
+
+
 
 interface ArticlePageProps {
   articles: Article[];
@@ -22,18 +26,59 @@ export const articleContext = createContext<any>(null);
 
 const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
 
-  
+  const [article, setArticle] = useState<any[]>([]);
+
+  const userInfo = useContext(UserContext);
+  console.log(userInfo, "userInfo");
+  const username = userInfo?.user?.user?.username
+
+  useEffect(() => {
+    setArticle(articles);
+  }, [])
 
 
-  // const handleLikes = (article:Article) =>{
-  //   const like = article.favorited;
-  //   const likeResponse = postFavorite(article.slug);
-  //   console.log("LIke Response", likeResponse)
+  const handleLikes = async (likeIndex: number) => {
 
-  // }
+    if (!userInfo?.isAuth) {
+      console.log(userInfo?.isAuth);
+      alert("you need to login first");
+      return;
+    }
+
+    try {
+      const modifyArticle = await articles.map(async (article: Article, index: number) => {
+        if (likeIndex === index) {
+
+          if (article.favorited) {
+            let count = article.favoritesCount - 1;
+            article.favoritesCount = count;
+            article.favorited = false;
+
+            setArticle(articles);
+          }
+          else {
+            let count = article.favoritesCount + 1;
+            article.favoritesCount = count;
+            article.favorited = true;
+
+
+            setArticle(articles)
+          }
+
+          const likeResponse = await postFavorite(article.slug, article.favorited);
+          return article
+        }
+      })
+      setArticle(modifyArticle);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
+
       {!articles ? "" : articles.map((article, index) => (
         <Card
           key={index}
@@ -47,7 +92,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
           }}
         >
           <CardContent>
-            <Box display="flex" justifyContent="space-between">
+            <Box display="flex" justifyContent="space-between" >
               <Box display="flex" gap={0.7}>
                 {article.author.image ? (
                   <Avatar src={article.author.image} />
@@ -72,23 +117,34 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
                 </Box>
               </Box>
 
+
               <Box display="flex" alignItems="center" gap={0.5}>
                 <Button variant="outlined"
                   sx={{
-                    color: "#558b2f",
-                    '&:hover': {
-                      backgroundColor: '#8bc34a',
-                      borderColor: 'white',
-                    },
+                    color: article.favorited ? "red" : "#7cb342",
+                    borderColor: article.favorited ? "red" : "white",
                   }}
+
+                  onClick={() => { handleLikes(index) }}
                 >
-                  <FavoriteBorderIcon
+
+                  {article.favorited ? (<FavoriteIcon
                     sx={{
                       fontSize: "small",
+                      color: "#e53935",
+
                     }}
-                  />
+                  />) :
+                    (<FavoriteBorderIcon
+                      sx={{
+                        fontSize: "small",
+                        color: "#e53935",
+                      }}
+                    />)}
+
                   <Typography
                     fontSize={"small"}
+                    sx={{ color: "#e53935" }}
                   >
                     {article.favoritesCount}
                   </Typography>
@@ -147,3 +203,17 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
 };
 
 export default ArticlePage;
+
+
+
+//  if (article.favorited) {
+//       let count = article.favoritesCount - 1;
+//       console.log("like count", count);
+//     }
+//     else {
+//       let count = article.favoritesCount + 1;
+//       console.log("like count", count);
+//     }
+//    setArticle( article.favoritesCount);
+//    console.log(setArticle);
+//     article.favorited = !   article.favorited;

@@ -9,8 +9,10 @@ import SignUp from './Components/Pages/SignUp'
 import { NewArticlePage } from './Components/Pages/NewArticlePage'
 import { ReadMorePage } from './Components/Pages/ReadMorePage'
 
+
 export const UserContext = createContext<any>(null);
 function App() {
+
 
   const [user, setUser] = useState<any>({ isAuth: false, user: null });
 
@@ -25,17 +27,16 @@ function App() {
     } else {
       loggedUser = {
         isAuth: true,
-        user: userData, 
+        user: userData,
       };
       if (userData?.token) {
-        localStorage.setItem("token", userData.token); 
+        localStorage.setItem("token", userData.token);
       }
     }
 
     setUser(loggedUser);
     localStorage.setItem("log in info saved", JSON.stringify(loggedUser));
   };
-
 
   useEffect(() => {
     const savedUser = localStorage.getItem("log in info saved");
@@ -55,10 +56,11 @@ function App() {
             <Route path='/signup' element={<SignUp setUserData={setUserData} />} />
             <Route path='/newArticle' element={<NewArticlePage />} />
             <Route path="/article/:slug" element={<ReadMorePage setUserData={setUserData} />} />
+            <Route path="/profile/:username" element={<Home setUserData={setUserData} />} />
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
-     
+
     </>
   )
 }

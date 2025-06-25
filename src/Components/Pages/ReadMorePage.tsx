@@ -14,7 +14,7 @@ import {
     Typography
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getComments } from '../Services/getComments';
 import { Main_URL } from '../constants';
 import axios from 'axios';
@@ -26,6 +26,8 @@ import IconButton from '@mui/material/IconButton';
 import { postFavorite } from '../Services/postFavorite';
 import { postFollow } from '../Services/postFollow';
 
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
 
 type Props = {
     setUserData: (userData: any, isAuth?: boolean) => void;
@@ -36,6 +38,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
     const [comments, setComments] = useState([]);
     const { slug } = useParams();
     const userInfo = useContext(UserContext);
+    const navigate = useNavigate();
 
     const location = useLocation();
     const article = location.state?.article;
@@ -46,26 +49,42 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
     const [favoritesCount, setFavoritesCount] = useState(article.favoritesCount || 0)
     const [body, setBody] = useState("");
 
+    const username = userInfo?.user?.user?.username
+
     const handleToggleFollow = async () => {
-        try{
-             if (isFollowing) {
-            setFollowersCount((followersCount: any) => followersCount - 1);
-        } else {
-            setFollowersCount((followersCount: any) => followersCount + 1);
+
+        if (!userInfo?.isAuth) {
+            console.log(userInfo?.isAuth);
+            alert("you need to login first");
+            return;
         }
-        setIsFollowing(!isFollowing);
 
-        const followingResponse = await postFollow(article.slug, article.author.username, isFollowing, followersCount);
-        console.log("folling response ", followingResponse);
-        setFollowersCount(followingResponse.followersCount);
-        setIsFollowing(followingResponse.following)
+        try {
+            if (isFollowing) {
+                setFollowersCount((followersCount: any) => followersCount - 1);
+            } else {
+                setFollowersCount((followersCount: any) => followersCount + 1);
+            }
+            setIsFollowing(!isFollowing);
 
-        }catch(error){
+            const followingResponse = await postFollow(article.slug, article.author.username, isFollowing, followersCount);
+            console.log("folling response ", followingResponse);
+            setFollowersCount(followingResponse.followersCount);
+            setIsFollowing(followingResponse.following)
+
+        } catch (error) {
             console.log(error);
-        } 
+        }
     };
 
     const handleToggleFavorits = async () => {
+
+        if (!userInfo?.isAuth) {
+            console.log(userInfo?.isAuth);
+            alert("you need to login first");
+            return;
+        }
+
         try {
             if (isFavorited) {
                 setFavoritesCount((favoritesCount: any) => favoritesCount - 1)
@@ -92,6 +111,14 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
     };
 
     const handleSubmit = async () => {
+
+        if (!userInfo?.isAuth) {
+            console.log(userInfo?.isAuth);
+            alert("you need to login first");
+            return;
+        }
+
+
         try {
             const postedComment = await postComment(article.slug, body);
             console.log("posted comment", postedComment)
@@ -101,6 +128,11 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
             console.error("error posting comment", error)
         }
     }
+
+    const handleUpdate = async () => {
+
+        navigate('/newArticle', { state: { article } });
+    };
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -150,45 +182,64 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                             })}
                         </Typography>
                     </Box>
-                    <Box ml={2} display="flex" gap={1}>
-                        <Button variant="outlined" size="small"
-                            sx={{
-                                backgroundColor: "white",
-                                '&:hover': {
-                                    backgroundColor: "#90caf9",
-                                    color: "white"
+
+                    {username === article.author.username ? (
+                        <Box ml={2} display="flex" gap={1}>
+                            <Button variant="outlined" size="small" sx={{ backgroundColor: "white" }} onClick={handleUpdate}>Edit Article</Button>
+                            <Button variant="outlined" size="small" color="error">Delete Article</Button>
+                        </Box>
+                    ) : (
+                        <Box ml={2} display="flex" gap={1}>
+                            <Button variant="outlined" size="small"
+                                sx={{
+                                    backgroundColor: "white",
+                                    color: "#66bb6a",
+                                    '&:hover': {
+                                        backgroundColor: isFollowing ? "#558b2f" : "#90caf9",
+                                        color: "white"
+                                    }
+                                }}
+                                onClick={handleToggleFollow}
+                                value={followersCount}
+                            >
+                                {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
+                            </Button>
+
+                            <Button
+                                sx={{
+                                    backgroundColor: "white",
+                                    color: "#66bb6a",
+                                    '&:hover': {
+                                        backgroundColor: "#90caf9",
+                                        color: "white"
+                                    },
+                                }}
+                                variant="outlined"
+                                size="small"
+                                startIcon={
+                                    isFavorited ? (
+                                        <FavoriteIcon sx={{ fontSize: "small", color: "#66bb6a" }} />
+                                    ) : (
+                                        <FavoriteBorderIcon sx={{ fontSize: "small", color: "#66bb6a" }} />
+                                    )
                                 }
-                            }}
-                            onClick={handleToggleFollow}
-                            value={followersCount}
-                        >
-                            {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
-                        </Button>
-                        <Button
-                            sx={{
-                                backgroundColor: "white",
-                                '&:hover': {
-                                    backgroundColor: "#90caf9",
-                                    color: "white"
-                                },
-                            }}
-                            variant="outlined"
-                            size="small"
-                            startIcon={<FavoriteIcon />}
-                            value={favoritesCount}
-                            onClick={handleToggleFavorits}
-                        >
-                            {isFavorited ? `dislike` : `like`} ({favoritesCount})
-                        </Button>
-                    </Box>
+
+
+                                value={favoritesCount}
+                                onClick={handleToggleFavorits}
+                            >
+                                {isFavorited ? `dislike` : `like`} ({favoritesCount})
+                            </Button>
+                        </Box>
+                    )}
                 </Box>
 
             </Box>
 
 
             <Box sx={{ px: 4, py: 4, width: '100vw' }}>
-                <Typography variant="h6" gutterBottom alignContent={"left"}>
-                    {article.author.description}
+                <Typography variant="h6" gutterBottom textAlign={"left"}>
+                    {article.description}
                 </Typography>
 
                 <Box mt={4} mb={4} display="flex" flexWrap="wrap">
@@ -222,37 +273,55 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                             })}
                         </Typography>
                     </Box>
-                    <Box ml={2} display="flex" gap={1}>
-                        <Button variant="outlined" size="small"
-                            onClick={handleToggleFollow}
-                            value={followersCount}
-                            sx={{
-                                backgroundColor: "white",
-                                '&:hover': {
-                                    backgroundColor: "#90caf9",
-                                    color: "white"
+
+                    {username === article.author.username ? (
+                        <Box ml={2} display="flex" gap={1}>
+                            <Button variant="outlined" size="small" sx={{ backgroundColor: "white" }}>Edit Article</Button>
+                            <Button variant="outlined" size="small" color="error">Delete Article</Button>
+                        </Box>
+                    ) : (
+                        <Box ml={2} display="flex" gap={1}>
+                            <Button variant="outlined" size="small"
+                                onClick={handleToggleFollow}
+                                value={followersCount}
+                                sx={{
+                                    backgroundColor: "white",
+                                    color: "#66bb6a",
+                                    '&:hover': {
+                                        backgroundColor: "#90caf9",
+                                        color: "white"
+                                    }
+                                }}
+                            >
+                                {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
+                            </Button>
+
+                            <Button
+                                sx={{
+                                    backgroundColor: "white",
+                                    color: "#66bb6a",
+                                    '&:hover': {
+                                        backgroundColor: "#90caf9",
+                                        color: "white"
+                                    }
+                                }}
+                                variant="outlined"
+                                size="small"
+                                startIcon={
+                                    isFavorited ? (
+                                        <FavoriteIcon sx={{ fontSize: "small", color: "#66bb6a" }} />
+                                    ) : (
+                                        <FavoriteBorderIcon sx={{ fontSize: "small", color: "#66bb6a" }} />
+                                    )
                                 }
-                            }}
-                        >
-                            {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
-                        </Button>
-                        <Button
-                            sx={{
-                                backgroundColor: "white",
-                                '&:hover': {
-                                    backgroundColor: "#90caf9",
-                                    color: "white"
-                                }
-                            }}
-                            variant="outlined"
-                            size="small"
-                            startIcon={<FavoriteIcon />}
-                            value={favoritesCount}
-                            onClick={handleToggleFavorits}
-                        >
-                            {isFavorited ? `dislike` : `like`} ({favoritesCount})
-                        </Button>
-                    </Box>
+
+                                value={favoritesCount}
+                                onClick={handleToggleFavorits}
+                            >
+                                {isFavorited ? `dislike` : `like`} ({favoritesCount})
+                            </Button>
+                        </Box>
+                    )}
                 </Box>
 
 
@@ -276,11 +345,10 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                             <Button variant="contained"
                                 sx={{
                                     backgroundColor: '#fff',
-                                    color: '#ec407a',
+                                    color: '#689f38',
                                     '&:hover': {
-                                        backgroundColor: '#ec407a',
+                                        backgroundColor: '#689f38',
                                         color: '#fff',
-
                                     }
                                 }}
                                 onClick={handleSubmit}

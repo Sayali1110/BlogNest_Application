@@ -86,7 +86,7 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
       minHeight="92vh"
       width="93.8vw"
       sx={{
-        background: "linear-gradient(to right, #f8bbd0, #fce4ec)",
+        background: "linear-gradient(to right, #c5e1a5, #c5e1a5)",
         padding: 2,
       }}
     >
@@ -104,7 +104,7 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
           p: 5,
         }}
       >
-        <Typography variant="h4" fontWeight="bold" color="#e91e63" textAlign="center">
+        <Typography variant="h4" fontWeight="bold" color="#689f38" textAlign="center">
           Sign Up
         </Typography>
 
@@ -112,7 +112,7 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
           variant="body2"
           sx={{
             cursor: "pointer",
-            color: "#e91e63",
+            color: "#689f38",
             textDecoration: "underline",
           }}
           onClick={() => navigate('/login')}
@@ -156,13 +156,13 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
           variant="contained"
           fullWidth
           sx={{
-            backgroundColor: "#e91e63",
+            backgroundColor: "#689f38",
             color: "white",
             borderRadius: "8px",
             textTransform: "none",
             fontWeight: "bold",
             "&:hover": {
-              backgroundColor: "#f06292",
+              backgroundColor: "#aed581",
             },
           }}
           onClick={userReg}

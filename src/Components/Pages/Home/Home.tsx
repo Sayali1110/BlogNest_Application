@@ -7,6 +7,8 @@ import {
   Pagination,
   CircularProgress,
   Typography,
+  Avatar,
+  Button,
 } from "@mui/material";
 
 import { getTags } from "../../Services/getTags";
@@ -16,6 +18,7 @@ import TagPage from "./TagPage";
 import ArticlePage from "./ArticlePage";
 import Header from "../../Header";
 import { UserContext } from "../../../App";
+import { useLocation, useParams } from "react-router-dom";
 
 type Props = {
   setUserData: (userData: any, isAuth?: boolean) => void;
@@ -30,7 +33,13 @@ const Home: React.FC<Props> = ({ setUserData }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState("");
   const [selectedTab, setselectedTab] = useState(-1);
- 
+
+  const { username } = useParams();
+
+  const location = useLocation();
+
+  const isProfilePage = location.pathname.startsWith("/profile");
+
   const [loading, setLoading] = useState(true);
 
   const handlePages = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -50,7 +59,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
     setPage(1);
     setSelectedTag("");
   };
-  
+
   const changeTab = (event: React.SyntheticEvent, value: number) => {
     setPage(1);
     setselectedTab(value);
@@ -62,24 +71,44 @@ const Home: React.FC<Props> = ({ setUserData }) => {
   const fetchArticles = async () => {
 
     try {
+
       const offset = (page - 1) * articleOnOnePage;
       let articleResponse: ArticleResponse;
 
-      if (selectedTab === 0 && userInfo?.isAuth) {
-        articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, true);
-      }
-      else if (selectedTab === 1) {
-        articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, false);
-      }
-      else if (selectedTab === 2 && selectedTag) {
-        articleResponse = await getArticles(offset, articleOnOnePage, selectedTag, userInfo?.user?.token, false);
+      if (isProfilePage) {
+
+        if (selectedTab === 0) {
+          articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, false, username);
+        }
+        else if (selectedTab === 1) {
+          articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, false, " ", username);
+        }
+        else {
+          return;
+        }
+        setArticles(articleResponse?.articles || []);
+        setArticleCount(articleResponse?.articlesCount || 0);
+
       }
       else {
-        return;
+
+        if (selectedTab === 0 && userInfo?.isAuth) {
+          articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, true);
+        }
+        else if (selectedTab === 1) {
+          articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, false);
+        }
+        else if (selectedTab === 2 && selectedTag) {
+          articleResponse = await getArticles(offset, articleOnOnePage, selectedTag, userInfo?.user?.token, false);
+        }
+        else {
+          return;
+        }
+        setArticles(articleResponse?.articles || []);
+        setArticleCount(articleResponse?.articlesCount || 0);
       }
 
-      setArticles(articleResponse?.articles || []);
-      setArticleCount(articleResponse?.articlesCount || 0);
+
 
 
     } catch (error) {
@@ -106,23 +135,23 @@ const Home: React.FC<Props> = ({ setUserData }) => {
     fetchTags();
   }, []);
 
- useEffect(() => {
-  if (userInfo?.isAuth !== undefined) {
-    setselectedTab(userInfo?.isAuth ? 0 : 1);
-    setPage(1);
-  }
-}, [userInfo?.isAuth]);
+  useEffect(() => {
+    if (userInfo?.isAuth !== undefined) {
+      setselectedTab(userInfo?.isAuth ? 0 : 1);
+      setPage(1);
+    }
+  }, [userInfo?.isAuth]);
 
-useEffect(() => {
-  if (selectedTab !== -1) {
-    fetchArticles();
-  }
-}, [selectedTag, page, selectedTab]); 
+  useEffect(() => {
+    if (selectedTab !== -1) {
+      fetchArticles();
+    }
+  }, [selectedTag, page, selectedTab]);
   return (
     <Box >
       {(loading || selectedTab === -1) ? (
         <Box
-        //  display="flex"
+          //  display="flex"
           justifyContent="center"
           alignItems="center"
           minHeight="300px"
@@ -131,12 +160,31 @@ useEffect(() => {
         </Box>
       ) : (
         <>
-          <Header />
-          <Tabs value={selectedTab} onChange={changeTab} >
+          {isProfilePage ? (<Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            py={4}
+            sx={{ backgroundColor: "#e0e0e0" }}
+          >
+            <Avatar sx={{ width: 80, height: 80 }} />
+            <Typography variant="h5" mt={2}>
+              Sayali
+            </Typography>
+
+          </Box>) : (<Header />)}
+
+          {isProfilePage && <Tabs value={selectedTab} onChange={changeTab}>
+            <Tab label="My Articles" sx={{ color: "#8bc34a" }} value={0} />
+            <Tab label="Favorited Articles" sx={{ color: "#8bc34a" }} value={1} />
+          </Tabs>}
+
+          {!isProfilePage && <Tabs value={selectedTab} onChange={changeTab} >
             {userInfo?.isAuth && <Tab label="Your Feed" sx={{ color: "#8bc34a" }} value={0} />}
             <Tab label="Global Feed" sx={{ color: "#8bc34a" }} value={1} />
             {selectedTag && <Tab label={selectedTag} sx={{ color: "#8bc34a" }} value={2} />}
-          </Tabs>
+          </Tabs>}
+
 
           <Box width="100%" display="flex" justifyContent="space-between" gap={2}>
 
@@ -163,25 +211,32 @@ useEffect(() => {
               </Box>) : (<Typography align="left" padding={2} marginLeft={-2}>Articles not available</Typography>)}
 
             </Box>)}
+            {!isProfilePage && (
+              loading ? (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  minHeight="300px"
+                >
+                  <CircularProgress />
+                  loading Tags
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    backgroundColor: '#e0e0e0',
+                    width: "25%",
+                    borderRadius: "8px"
+                  }}
+                >
+                  <TagPage tags={tags} handleTags={handleTags} />
+                </Box>
+              )
+            )}
 
-            {loading ? (<Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              minHeight="300px"
-            >
-              <CircularProgress />
-              loading Tags
-            </Box>) : (
-              <Box
-                sx={{
-                  backgroundColor: '#e0e0e0',
-                  width: "25%",
-                  borderRadius: "8px"
-                }}
-              >
-                <TagPage tags={tags} handleTags={handleTags} />
-              </Box>)}
+
+
           </Box>
         </>
       )}

@@ -3,7 +3,7 @@ import { Main_URL } from "../constants";
 
 export const postComment = async (slug: string, body: string,) => {
     try {
-          const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
         const { data } = await axios({
             data: { comment: { body } },
             headers: {

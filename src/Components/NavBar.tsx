@@ -11,6 +11,8 @@ type Props = {
 
 const NavBar: React.FC<Props> = ({ setUserData }) => {
     const location = useLocation();
+
+    const isProfilePage = location.pathname.startsWith("/profile");
     const userInfo = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -34,7 +36,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
     }
 
     return (
-        <AppBar  sx={{ backgroundColor: "white", color: "pink" }}>
+        <AppBar sx={{ backgroundColor: "white", color: "pink" }}>
             <Toolbar>
                 <Typography
                     variant="h6"
@@ -58,11 +60,11 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                         sx={{
                             px: 2,
                             py: 1,
-                            backgroundColor: location.pathname === "/" ? "#8bc34a" : "transparent",
-                            color: location.pathname === "/" ? "white" : "#7cb342",
+                            backgroundColor: location.pathname === "/" ? "white" : "white",
+                            color: location.pathname === "/" ? "#424242" : "#bdbdbd",
                             "&:hover": {
-                                backgroundColor: "#fdecef",
-                                color: "#33691e",
+                                backgroundColor: "white",
+                                color: "#424242",
                             },
                         }}
                     >
@@ -72,7 +74,14 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                     {userInfo?.isAuth ? (
                         <>
                             <Button component={Link} to="/newArticle"
-                                sx={{ color: '#8bc34a' }}>
+                                sx={{
+                                    backgroundColor: location.pathname === "/" ? "white" : "white",
+                                    color: location.pathname === "/" ? "#bdbdbd" : "#424242",
+                                    "&:hover": {
+                                        backgroundColor: "white",
+                                        color: "#424242",
+                                    },
+                                }}>
                                 New Article
                             </Button>
                         </>
@@ -80,7 +89,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                         <Button component={Link} to='/login'
                             sx={{
                                 backgroundColor: location.pathname === "/login" ? "#8bc34a" : "transparent",
-                                color: location.pathname === "/login" ? "white" : "#689f38",
+                                color: location.pathname === "/login" ? "white" : "#bdbdbd",
                                 "&:hover": {
                                     backgroundColor: "#fdecef",
                                     color: "#33691e",
@@ -94,14 +103,35 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
 
                     {userInfo?.isAuth ? (
                         <Box display="flex" alignItems="center" gap={1}>
-                            <Button
+
+                            <Button 
                                 onClick={handleMenuOpen}
-                                sx={{ textTransform: 'none', color: '#8bc34a' }}
+                                sx={{
+                                    backgroundColor: location.pathname === "/" ? "white" : "white",
+                                    color: location.pathname === "/" ? "#bdbdbd" : "#424242",
+                                    "&:hover": {
+                                        backgroundColor: "white",
+                                        color: "#424242",
+                                    },
+                                }}
                                 startIcon={
                                     userInfo?.user?.user?.image ? (
-                                        <Avatar  src={userInfo.user.user.image} />
+                                        <Avatar src={userInfo.user.user.image} sx={{
+                                            width: 30,
+                                            height: 30,
+                                            "&:hover": {
+                                                backgroundColor: "white",
+                                                color: "#424242",
+                                            },
+                                        }} />
                                     ) : (
-                                        <Avatar sx={{ backgroundColor: '#8bc34a'}}>
+                                        <Avatar sx={{
+                                            backgroundColor: '#bdbdbd', "&:hover": {
+                                                backgroundColor: "white",
+                                                color: "#424242",
+                                                
+                                            },
+                                        }}>
                                             {userInfo?.user?.user?.username[0]}
                                         </Avatar>
                                     )
@@ -119,7 +149,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                                     sx: { width: 200 },
                                 }}
                             >
-                                <MenuItem onClick={() => { handleMenuClose()}}>Profile</MenuItem>
+                                <MenuItem onClick={() => { handleMenuClose(); navigate(`/profile/${userInfo?.user?.user?.username}`) }}>Profile</MenuItem>
                                 <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
                                 <MenuItem onClick={() => { handleMenuClose(); Logout(); }}>
                                     Logout
@@ -146,7 +176,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                 </Box>
             </Toolbar>
         </AppBar>
-        
+
     );
 }
 export default NavBar;

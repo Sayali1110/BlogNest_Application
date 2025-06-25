@@ -3,6 +3,7 @@ import { Main_URL } from "../constants"
 
 export const postFavorite = async (slug: string, isFavorited: boolean) => {
     try {
+        console.log("In post favourite service", )
         const token = localStorage.getItem("token");
         const response = await axios({
             method: isFavorited ? "DELETE" : "POST",

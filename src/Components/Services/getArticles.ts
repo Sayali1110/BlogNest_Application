@@ -3,14 +3,26 @@ import { Main_URL } from "../constants";
 import { useContext } from "react";
 import { UserContext } from "../../App";
 
-export const getArticles = async (page: number, articleOnOnePage: number, tag?: string, token?: string, isFeed?: boolean) => {
+export const getArticles = async (page: number, articleOnOnePage: number, tag?: string, token?: string, isFeed?: boolean, author?: string, favorited?: string) => {
 
   try {
     let parameters: any = {
-      tag: tag,
+      // tag: tag,
+      // author:author,
+      // favorited : favorited,
       limit: articleOnOnePage,
       offset: page,
     }
+
+    if(tag) parameters.tag = tag;
+     if(favorited) {
+      parameters.favorited = favorited
+     }
+     else{
+if(author) parameters.author = author;
+     }
+    
+  
 
     const headers = token ? { Authorization: `Token ${token}` } : {};
 

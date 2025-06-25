@@ -68,7 +68,7 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
         width: '93.8vw',
         height: '100vh',
         overflow: 'hidden',
-        background: 'linear-gradient(to right, #f8bbd0, #fce4ec)',
+        background: 'linear-gradient(to right, #c5e1a5, #c5e1a5)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -89,7 +89,7 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
         }}
       >
 
-        <Typography variant="h4" fontWeight="bold" color="#e91e63" textAlign="center"
+        <Typography variant="h4" fontWeight="bold" color="#689f38" textAlign="center"
         >
           Login
         </Typography>
@@ -98,7 +98,7 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
           variant="body2"
           sx={{
             cursor: 'pointer',
-            color: '#e91e63',
+            color: '#689f38',
             textDecoration: 'underline',
           }}
           onClick={() => navigate('/signup')}
@@ -134,13 +134,13 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
           fullWidth
           onClick={login}
           sx={{
-            backgroundColor: '#e91e63',
+            backgroundColor: '#689f38',
             color: 'white',
             borderRadius: '8px',
             textTransform: 'none',
             fontWeight: 'bold',
             '&:hover': {
-              backgroundColor: '#f06292',
+              backgroundColor: '#9ccc65',
             },
           }}
         >
