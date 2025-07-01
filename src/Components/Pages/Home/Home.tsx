@@ -32,6 +32,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
   const [articleCount, setArticleCount] = useState<number>(0);
   const [tags, setTags] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState("");
+
   const [selectedTab, setselectedTab] = useState(-1);
 
   const { username } = useParams();
@@ -147,6 +148,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
       fetchArticles();
     }
   }, [selectedTag, page, selectedTab]);
+
   return (
     <Box >
       {(loading || selectedTab === -1) ? (

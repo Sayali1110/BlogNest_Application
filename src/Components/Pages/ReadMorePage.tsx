@@ -27,6 +27,7 @@ import { postFavorite } from '../Services/postFavorite';
 import { postFollow } from '../Services/postFollow';
 
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { deleteArticle } from '../Services/deleteArticle';
 
 
 type Props = {
@@ -117,8 +118,6 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
             alert("you need to login first");
             return;
         }
-
-
         try {
             const postedComment = await postComment(article.slug, body);
             console.log("posted comment", postedComment)
@@ -128,6 +127,20 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
             console.error("error posting comment", error)
         }
     }
+
+    const handleDelete = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this article?");
+        if (!confirmDelete) return;
+
+        try {
+            await deleteArticle(article.slug);
+            alert("Article deleted successfully!");
+            navigate('/');
+        } catch (error) {
+            console.error("Error deleting article:", error);
+            alert("Failed to delete the article. Please try again.");
+        }
+    };
 
     const handleUpdate = async () => {
 
@@ -186,7 +199,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                     {username === article.author.username ? (
                         <Box ml={2} display="flex" gap={1}>
                             <Button variant="outlined" size="small" sx={{ backgroundColor: "white" }} onClick={handleUpdate}>Edit Article</Button>
-                            <Button variant="outlined" size="small" color="error">Delete Article</Button>
+                            <Button variant="outlined" size="small" color="error" onClick={handleDelete}>Delete Article</Button>
                         </Box>
                     ) : (
                         <Box ml={2} display="flex" gap={1}>
@@ -194,10 +207,11 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                 sx={{
                                     backgroundColor: "white",
                                     color: "#66bb6a",
+                                    border: "1px solid #66bb6a",
                                     '&:hover': {
-                                        backgroundColor: isFollowing ? "#558b2f" : "#90caf9",
-                                        color: "white"
-                                    }
+                                        color: "#2e7d32",
+                                        border: "1px solid #66bb6a",
+                                    },
                                 }}
                                 onClick={handleToggleFollow}
                                 value={followersCount}
@@ -209,9 +223,10 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                 sx={{
                                     backgroundColor: "white",
                                     color: "#66bb6a",
+                                    border: "1px solid #66bb6a",
                                     '&:hover': {
-                                        backgroundColor: "#90caf9",
-                                        color: "white"
+                                        color: "#2e7d32",
+                                        border: "1px solid #66bb6a",
                                     },
                                 }}
                                 variant="outlined"
@@ -223,8 +238,6 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                         <FavoriteBorderIcon sx={{ fontSize: "small", color: "#66bb6a" }} />
                                     )
                                 }
-
-
                                 value={favoritesCount}
                                 onClick={handleToggleFavorits}
                             >
@@ -277,7 +290,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                     {username === article.author.username ? (
                         <Box ml={2} display="flex" gap={1}>
                             <Button variant="outlined" size="small" sx={{ backgroundColor: "white" }}>Edit Article</Button>
-                            <Button variant="outlined" size="small" color="error">Delete Article</Button>
+                            <Button variant="outlined" size="small" color="error" onClick={handleDelete}>Delete Article</Button>
                         </Box>
                     ) : (
                         <Box ml={2} display="flex" gap={1}>
@@ -287,10 +300,11 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                 sx={{
                                     backgroundColor: "white",
                                     color: "#66bb6a",
+                                    border: "1px solid #66bb6a",
                                     '&:hover': {
-                                        backgroundColor: "#90caf9",
-                                        color: "white"
-                                    }
+                                        color: "#2e7d32",
+                                        border: "1px solid #66bb6a",
+                                    },
                                 }}
                             >
                                 {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
@@ -300,10 +314,11 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                 sx={{
                                     backgroundColor: "white",
                                     color: "#66bb6a",
+                                    border: "1px solid #66bb6a",
                                     '&:hover': {
-                                        backgroundColor: "#90caf9",
-                                        color: "white"
-                                    }
+                                        color: "#2e7d32",
+                                        border: "1px solid #66bb6a",
+                                    },
                                 }}
                                 variant="outlined"
                                 size="small"
