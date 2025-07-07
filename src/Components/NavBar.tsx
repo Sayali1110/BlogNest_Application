@@ -37,7 +37,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
 
     return (
         <AppBar sx={{ backgroundColor: "white", color: "pink" }}>
-            <Toolbar>
+            <Toolbar >
                 <Typography
                     variant="h6"
                     sx={{
@@ -47,7 +47,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                         textAlign: "left",
                         minWidth: 100,
                         "&:hover": {
-                            color: "#4db6ac"
+                            color: "#689f38"
                         }
                     }}
                     component={Link} to="/"
@@ -104,9 +104,10 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                     {userInfo?.isAuth ? (
                         <Box display="flex" alignItems="center" gap={1}>
 
-                            <Button 
+                            <Button
                                 onClick={handleMenuOpen}
                                 sx={{
+                                    gap: 0.5,
                                     backgroundColor: location.pathname === "/" ? "white" : "white",
                                     color: location.pathname === "/" ? "#bdbdbd" : "#424242",
                                     "&:hover": {
@@ -114,29 +115,20 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                                         color: "#424242",
                                     },
                                 }}
-                                startIcon={
-                                    userInfo?.user?.user?.image ? (
-                                        <Avatar src={userInfo.user.user.image} sx={{
-                                            width: 30,
-                                            height: 30,
-                                            "&:hover": {
-                                                backgroundColor: "white",
-                                                color: "#424242",
-                                            },
-                                        }} />
-                                    ) : (
-                                        <Avatar sx={{
-                                            backgroundColor: '#bdbdbd', "&:hover": {
-                                                backgroundColor: "white",
-                                                color: "#424242",
-                                                
-                                            },
-                                        }}>
-                                            {userInfo?.user?.user?.username[0]}
-                                        </Avatar>
-                                    )
-                                }
                             >
+                                {userInfo?.user?.user?.image ?
+                                    (<Avatar src={userInfo.user.user.image} sx={{
+                                        width: 24,
+                                        height: 24,
+                                    }} />)
+                                    : (<Avatar sx={{
+                                        width: 24,
+                                        height: 24,
+                                        fontSize: "0.9rem",
+                                        backgroundColor: '#bdbdbd'
+                                    }}>
+                                        {userInfo?.user?.user?.username[0]}
+                                    </Avatar>)}
                                 <Typography>  {userInfo?.user?.user?.username}</Typography>
                                 <Typography fontSize="large"> ▼</Typography>
                             </Button>
@@ -161,11 +153,11 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                             component={Link}
                             to="/signup"
                             sx={{
-                                backgroundColor: location.pathname === '/signup' ? '#689f38' : 'transparent',
-                                color: location.pathname === '/signup' ? 'white' : '#7cb342',
-                                '&:hover': {
-                                    backgroundColor: '#fdecef',
-                                    color: '#33691e',
+                                backgroundColor: location.pathname === "/signup" ? "#8bc34a" : "transparent",
+                                color: location.pathname === "/signup" ? "white" : "#bdbdbd",
+                                "&:hover": {
+                                    backgroundColor: "#fdecef",
+                                    color: "#33691e",
                                 },
                             }}
                         >
