@@ -19,10 +19,7 @@ import { getComments } from '../Services/getComments';
 import { Main_URL } from '../constants';
 import axios from 'axios';
 import { UserContext } from '../../App';
-import { Favorite } from '@mui/icons-material';
 import { postComment } from '../Services/postComment';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
 import { postFavorite } from '../Services/postFavorite';
 import { postFollow } from '../Services/postFollow';
 
@@ -42,12 +39,14 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
     const navigate = useNavigate();
 
     const location = useLocation();
-    const article = location.state?.article;
+    //const article = location.state?.article;// one article data
+   
+    const [article, setArticle] = useState(location.state?.article);
 
-    const [isFollowing, setIsFollowing] = useState(article.author.followers || false);
-    const [followersCount, setFollowersCount] = useState(article.author.followersCount || 0);
-    const [isFavorited, setIsFavorited] = useState(article.favorited || false)
-    const [favoritesCount, setFavoritesCount] = useState(article.favoritesCount || 0)
+    const [isFollowing, setIsFollowing] = useState(article?.author?.followers || false);
+    const [followersCount, setFollowersCount] = useState(article?.author?.followersCount || 0);
+    const [isFavorited, setIsFavorited] = useState(article?.favorited || false)
+    const [favoritesCount, setFavoritesCount] = useState(article?.favoritesCount || 0)
     const [body, setBody] = useState("");
 
     const username = userInfo?.user?.user?.username
@@ -67,12 +66,16 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                 setFollowersCount((followersCount: any) => followersCount + 1);
             }
             setIsFollowing(!isFollowing);
+            setArticle(article);
 
             const followingResponse = await postFollow(article.slug, article.author.username, isFollowing, followersCount);
-            console.log("folling response ", followingResponse);
-            setFollowersCount(followingResponse.followersCount);
-            setIsFollowing(followingResponse.following)
+            console.log("follwing response ", followingResponse);
 
+            if (followingResponse) {
+                setIsFollowing(followingResponse.following);
+                setFollowersCount(followingResponse.followersCount);
+                setArticle(article);
+            }
         } catch (error) {
             console.log(error);
         }
@@ -94,6 +97,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                 setFavoritesCount((favoritesCount: any) => favoritesCount + 1)
             }
             setIsFavorited(!isFavorited);
+            setArticle(article);
 
             const likeResponse = await postFavorite(article.slug, isFavorited);
             console.log("likes response..", likeResponse);
@@ -103,12 +107,12 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
             if (likeResponse) {
                 setIsFavorited(likeResponse.favorited);
                 setFavoritesCount(likeResponse.favoritesCount);
+                setArticle(article);
             }
 
         } catch (error) {
             console.error(error);
         }
-
     };
 
     const handleSubmit = async () => {
@@ -120,7 +124,10 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
         }
         try {
             const postedComment = await postComment(article.slug, body);
+
             console.log("posted comment", postedComment)
+            const commentResponse = await getComments(article.slug);
+            setComments(commentResponse.comments);
             setBody("");
         }
         catch (error) {
@@ -143,7 +150,6 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
     };
 
     const handleUpdate = async () => {
-
         navigate('/newArticle', { state: { article } });
     };
 
@@ -213,8 +219,9 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                         border: "1px solid #66bb6a",
                                     },
                                 }}
-                                onClick={handleToggleFollow}
+                               
                                 value={followersCount}
+                                 onClick={handleToggleFollow}
                             >
                                 {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
                             </Button>
@@ -289,7 +296,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
 
                     {username === article.author.username ? (
                         <Box ml={2} display="flex" gap={1}>
-                            <Button variant="outlined" size="small" sx={{ backgroundColor: "white" }}>Edit Article</Button>
+                            <Button variant="outlined" size="small" sx={{ backgroundColor: "white" }} onClick={handleUpdate}>Edit Article</Button>
                             <Button variant="outlined" size="small" color="error" onClick={handleDelete}>Delete Article</Button>
                         </Box>
                     ) : (
