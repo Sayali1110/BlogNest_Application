@@ -16,6 +16,7 @@ import { Link, Navigate } from "react-router-dom";
 import { ReadMorePage } from "../ReadMorePage";
 import { postFavorite } from "../../Services/postFavorite";
 import { UserContext } from "../../../App";
+import { getArticles } from "../../Services/getArticles";
 
 
 
@@ -24,18 +25,16 @@ interface ArticlePageProps {
 }
 export const articleContext = createContext<any>(null);
 
-const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
+const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {// 3 articles
 
-  const [article, setArticle] = useState<any[]>([]);
+  const [article, setArticle] = useState<any[]>(articles);
+  console.log("article from state", article);
+  console.log("article from props", articles);
+
 
   const userInfo = useContext(UserContext);
   console.log(userInfo, "userInfo");
   const username = userInfo?.user?.user?.username
-
-  useEffect(() => {
-    setArticle(articles);
-  }, [])
-
 
   const handleLikes = async (likeIndex: number) => {
 
@@ -53,20 +52,17 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
             let count = article.favoritesCount - 1;
             article.favoritesCount = count;
             article.favorited = false;
-
             setArticle(articles);
           }
           else {
             let count = article.favoritesCount + 1;
             article.favoritesCount = count;
             article.favorited = true;
-
-
             setArticle(articles)
           }
 
           const likeResponse = await postFavorite(article.slug, article.favorited);
-          return article
+          return article;
         }
       })
       setArticle(modifyArticle);
@@ -75,6 +71,10 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
       console.error(error);
     }
   }
+
+   useEffect(() => {
+    setArticle(articles);
+  }, [])
 
   return (
     <>
@@ -204,16 +204,3 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {
 
 export default ArticlePage;
 
-
-
-//  if (article.favorited) {
-//       let count = article.favoritesCount - 1;
-//       console.log("like count", count);
-//     }
-//     else {
-//       let count = article.favoritesCount + 1;
-//       console.log("like count", count);
-//     }
-//    setArticle( article.favoritesCount);
-//    console.log(setArticle);
-//     article.favorited = !   article.favorited;
