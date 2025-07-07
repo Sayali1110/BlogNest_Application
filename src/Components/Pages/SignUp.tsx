@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { userRegistration } from '../Services/userRegistration';
 import { Password } from '@mui/icons-material';
+import { FormHelperText } from '@mui/material';
 
 type SignUpProps = {
   setUserData: (userData: any, isAuth?: boolean) => void;
@@ -19,6 +20,8 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
   const [emailError, setEmailError] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
@@ -66,16 +69,22 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
     try {
       const userResopnse = await userRegistration(username, email, password);
       console.log("signup", userResopnse);
-      console.log("user signuop token", userResopnse?.user.token )
-       if (userResopnse?.user.token) {
-       setUserData(userResopnse, true);
+      console.log("user signup token", userResopnse?.user.token)
+      if (userResopnse?.user.token) {
+        setUserData(userResopnse, true);
+
+        setUsername("");
+        setEmail("");
+        setPassword("");
         navigate("/");
       }
     }
-    catch (error) {
-      console.error(error);
+    catch (error: any) {
+      const backendError = error?.response?.data?.errors?.body?.[0];
+      console.log("signup error", backendError);
+      setError(backendError || "Signup failed. Please try again.");
     }
-  }
+  };
 
   return (
     <Box
@@ -83,10 +92,10 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
       alignItems="center"
       display="flex"
       justifyContent="center"
-      minHeight="92vh"
+      minHeight="100vh"
       width="93.8vw"
       sx={{
-        background: "linear-gradient(to right, #c5e1a5, #c5e1a5)",
+        // backgroundColor: "#dcedc8",
         padding: 2,
       }}
     >
@@ -104,6 +113,7 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
           p: 5,
         }}
       >
+
         <Typography variant="h4" fontWeight="bold" color="#689f38" textAlign="center">
           Sign Up
         </Typography>
@@ -119,6 +129,8 @@ const SignUp: React.FC<SignUpProps> = ({ setUserData }) => {
         >
           Already have an account? Sign in
         </Typography>
+
+        {error && (<FormHelperText error>{error}</FormHelperText>)}
 
         <TextField
           label="Username"
