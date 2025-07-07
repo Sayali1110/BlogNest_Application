@@ -32,14 +32,17 @@ const Home: React.FC<Props> = ({ setUserData }) => {
   const [articleCount, setArticleCount] = useState<number>(0);
   const [tags, setTags] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState("");
+  const [selectedTab, setselectedTab] = useState<number>(-1);
 
-  const [selectedTab, setselectedTab] = useState(-1);
+  //const [selectedTab, setselectedTab] = useState(-1);
 
   const { username } = useParams();
 
   const location = useLocation();
 
   const isProfilePage = location.pathname.startsWith("/profile");
+
+
 
   const [loading, setLoading] = useState(true);
 
@@ -109,9 +112,6 @@ const Home: React.FC<Props> = ({ setUserData }) => {
         setArticleCount(articleResponse?.articlesCount || 0);
       }
 
-
-
-
     } catch (error) {
       console.error("Error fetching articles:", error);
       setArticles([]);
@@ -143,11 +143,24 @@ const Home: React.FC<Props> = ({ setUserData }) => {
     }
   }, [userInfo?.isAuth]);
 
+
+  useEffect(() => {
+  if (isProfilePage) {
+    setselectedTab(0); 
+  } else if (userInfo?.isAuth !== undefined) {
+    setselectedTab(userInfo.isAuth ? 0 : 1); 
+  }
+  setPage(1);
+  setSelectedTag("");
+}, [isProfilePage, userInfo?.isAuth]);
+
+
   useEffect(() => {
     if (selectedTab !== -1) {
       fetchArticles();
     }
-  }, [selectedTag, page, selectedTab]);
+  }, [selectedTab, selectedTag, page]);
+
 
   return (
     <Box >
@@ -171,7 +184,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
           >
             <Avatar sx={{ width: 80, height: 80 }} />
             <Typography variant="h5" mt={2}>
-              Sayali
+              {userInfo?.user?.user?.username}
             </Typography>
 
           </Box>) : (<Header />)}
@@ -195,6 +208,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
               justifyContent="center"
               alignItems="center"
               minHeight="300px"
+              
             >
               <CircularProgress />
               loading artciles
@@ -236,9 +250,6 @@ const Home: React.FC<Props> = ({ setUserData }) => {
                 </Box>
               )
             )}
-
-
-
           </Box>
         </>
       )}
