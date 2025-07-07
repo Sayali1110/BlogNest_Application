@@ -52,7 +52,7 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
       console.log("token from resonse", loginResponse?.user.token);
       if (loginResponse?.user.token) {
         setUserData(loginResponse, true);
-      
+
         navigate("/");
       }
 
