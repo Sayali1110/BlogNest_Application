@@ -1,5 +1,5 @@
 import { Box, Button, FormHelperText, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userLogin } from '../Services/userLogin';
 
@@ -53,6 +53,7 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
       console.log("token from resonse", loginResponse?.user.token);
       if (loginResponse?.user.token) {
         setUserData(loginResponse, true);
+      
         navigate("/");
       }
 
@@ -62,16 +63,18 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
     }
   };
 
+
   return (
     <Box
       sx={{
         width: '93.8vw',
         height: '100vh',
         overflow: 'hidden',
-        background: 'linear-gradient(to right, #c5e1a5, #c5e1a5)',
+        //backgroundColour: '#aed581',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+
       }}
     >
       <Box
