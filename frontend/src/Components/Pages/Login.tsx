@@ -68,7 +68,6 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
         width: '93.8vw',
         height: '100vh',
         overflow: 'hidden',
-        //backgroundColour: '#aed581',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
