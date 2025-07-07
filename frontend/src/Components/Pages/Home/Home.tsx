@@ -42,8 +42,6 @@ const Home: React.FC<Props> = ({ setUserData }) => {
 
   const isProfilePage = location.pathname.startsWith("/profile");
 
-
-
   const [loading, setLoading] = useState(true);
 
   const handlePages = (event: React.ChangeEvent<unknown>, value: number) => {
