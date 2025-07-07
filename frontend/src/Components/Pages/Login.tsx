@@ -40,7 +40,6 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
     } else {
       setPasswordError("");
     }
-
     return isValid;
   };
 
@@ -62,7 +61,6 @@ const Login: React.FC<SignIpProps> = ({ setUserData }) => {
       setError(backendError || "Login failed. Please try again.");
     }
   };
-
 
   return (
     <Box
