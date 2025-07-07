@@ -3,7 +3,6 @@ import { AppBar, Avatar, Box, Button, Menu, MenuItem, Toolbar, Typography } from
 import React, { useContext, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 type Props = {
     setUserData: (userData: any, isAuth?: boolean) => void;
@@ -99,7 +98,6 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                             Login
                         </Button>
                     )}
-
 
                     {userInfo?.isAuth ? (
                         <Box display="flex" alignItems="center" gap={1}>
