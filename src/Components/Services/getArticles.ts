@@ -14,16 +14,14 @@ export const getArticles = async (page: number, articleOnOnePage: number, tag?: 
       offset: page,
     }
 
-    if(tag) parameters.tag = tag;
-     if(favorited) {
+    if (tag) parameters.tag = tag;
+    if (favorited) {
       parameters.favorited = favorited
-     }
-     else{
-if(author) parameters.author = author;
-     }
+    }
+    else {
+      if (author) parameters.author = author;
+    }
     
-  
-
     const headers = token ? { Authorization: `Token ${token}` } : {};
 
     const url = isFeed ? `${Main_URL}/articles/feed` : `${Main_URL}/articles`;
