@@ -19,6 +19,7 @@ export const NewArticlePage = () => {
   const [tagInput, setTagInput] = useState("");
 
   let navigate = useNavigate();
+
   const location = useLocation();
   const existingArticle = location.state?.article;
 
@@ -48,6 +49,7 @@ export const NewArticlePage = () => {
       .split(",")
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
+      
 
     if (!existingArticle) {
       try {
@@ -62,6 +64,7 @@ export const NewArticlePage = () => {
         setError(backendError || "Error posting article.");
       }
     }
+
     else {
       try {
         const updatedArticle = await updateArticle(existingArticle.slug, {
