@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 async function userLogin(email, password) {
 
     try {
+        console.log("in login service")
         const existingUser = await User.findOne({ where: { email } });
         console.log("existing user" ,existingUser);
 
@@ -20,7 +21,7 @@ async function userLogin(email, password) {
         }
 
         const token = jwt.sign({ userEmail: existingUser.email }, 'secret-code', { expiresIn: '24h' });
-        console.log("token generation", token);
+        console.log("token generation for login", token);
 
         return {existingUser, token};
     }
