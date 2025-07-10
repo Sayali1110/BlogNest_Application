@@ -17,12 +17,20 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    bio: {
+        type:DataTypes.TEXT,
+        allowNull: true,
+    },
+     image: {
+        type:DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     timestamps: false
 });
 
 sequelize.sync().then(() => {
-  console.log("Database synced successfully");
+  console.log(" User Database synced successfully");
 });
 
 module.exports = User;
