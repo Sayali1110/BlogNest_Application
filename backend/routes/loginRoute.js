@@ -12,11 +12,17 @@ route.post('/', async (req, res) => {
         console.log("in login route");
 
         const result = await userLogin(email, password);
-        console.log("result for function", result)
+        console.log("result for login ", result);
+
+        const bio = result?.existingUser?.bio;
+        const image = result?.existingUser?.image;
+
+        const User = { username: result.existingUser.username, bio: bio, image: image, token: result.token, email: result.existingUser.email };
+
         if (result.token) {
             console.log("in if condition");
             res.status(200).json({
-                user: result,
+                User
             });
         }
         else {
