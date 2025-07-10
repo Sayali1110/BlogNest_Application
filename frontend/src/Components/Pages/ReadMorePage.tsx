@@ -14,10 +14,8 @@ import {
     Typography
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getComments } from '../Services/getComments';
-import { Main_URL } from '../constants';
-import axios from 'axios';
 import { UserContext } from '../../App';
 import { postComment } from '../Services/postComment';
 import { postFavorite } from '../Services/postFavorite';
@@ -39,8 +37,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
     const navigate = useNavigate();
 
     const location = useLocation();
-    //const article = location.state?.article;// one article data
-   
+
     const [article, setArticle] = useState(location.state?.article);
 
     const [isFollowing, setIsFollowing] = useState(article?.author?.followers || false);
