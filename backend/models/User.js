@@ -1,6 +1,5 @@
-const { Sequelize, DataTypes } = require('sequelize');
-
-const sequelize = new Sequelize('postgres://postgres:root@localhost:5432/blognest');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../db'); 
 
 const User = sequelize.define('User', {
     username: {
@@ -11,7 +10,6 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        primaryKey: true,
     },
     password: {
         type: DataTypes.STRING,
@@ -26,11 +24,9 @@ const User = sequelize.define('User', {
         allowNull: true,
     },
 }, {
-    timestamps: false
-});
+    timestamps: false,
+    tableName: 'Users',
 
-sequelize.sync().then(() => {
-  console.log(" User Database synced successfully");
 });
 
 module.exports = User;
