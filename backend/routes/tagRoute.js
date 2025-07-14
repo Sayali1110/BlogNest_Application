@@ -3,31 +3,40 @@ const router = express.Router();
 const Tag = require('../models/Tag');
 
 router.post('/', async (req, res) => {
-    try {
-        const { tags } = req.body;
+  console.log("in tags route");
+  try {
+    const { tags } = req.body;
 
-        console.log("tags for checking", tags)
+    console.log("tags for checking", tags)
 
-      if (!Array.isArray(tags) || tags.length === 0) {
-      return res.status(400).json({ message: 'tags must be a non-empty array of strings' });
+    if (!Array.isArray(tags) || tags.length === 0) {
+      return res.status(400).json({ message: 'tags are empty' });
     }
 
+    //accepts array
     const createdTags = await Promise.all(
       tags.map(async tagName => {
-        const [tag, created] = await Tag.findOrCreate({
+        const [tag] = await Tag.findOrCreate({
           where: { name: tagName }
         });
         return tag;
       })
     );
 
-        res.status(201).json({ message: 'tags created', createdTags });
 
-    }
-    catch (error) {
-        console.error("error creating tags", error);
-        res.status(500).json({ message: 'internal server error', error });
-    }
+    //single value
+    // const tag = await Tag.create({ 
+    //   name:tags
+    // })
+
+
+    res.status(201).json({ message: 'tags created', createdTags });
+
+  }
+  catch (error) {
+    console.error("error creating tags", error);
+    res.status(500).json({ message: 'internal server error', error });
+  }
 });
 
 module.exports = router;
