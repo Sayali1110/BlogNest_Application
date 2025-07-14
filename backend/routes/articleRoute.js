@@ -15,9 +15,7 @@ router.post('/', async (req, res) => {
     console.log("body:", req.body.body);
 
     const user = await User.findOne({ where: { email: req.body.email } });
-    console.log("user from article", user);
-
-
+    console.log("user from article:", user);
 
     if (!user) {
       return res.status(404).json({ message: "user not found" });
@@ -30,15 +28,37 @@ router.post('/', async (req, res) => {
       body,
       favoritedCount,
       favorited,
-      email,
+      userId: user.id,
+      tagList: tags
     });
+
+
     if (Array.isArray(tags)) {
       await Promise.all(
-        tags.map(tagName =>
-          Tag.create({ name: tagName, articleId: article.id })
-        )
+        tags.map(async (tagName) => {
+          const existingTag = await Tag.findOne({ where: { name: tagName } });
+          console.log("existing tag", existingTag)
+
+          if (existingTag) {
+            let updatedList = existingTag.articleIdList || [];
+
+            const articleId = article.id;
+
+              updatedList = [...updatedList, articleId];
+              console.log("updated list", updatedList)
+              await existingTag.update({ articleIdList: updatedList });
+            
+          }
+          else {
+            await Tag.create({
+              name: tagName,
+              articleIdList: [article.id]
+            });
+          }
+        })
       );
     }
+
 
     const fullArticle = await Article.findOne({
       where: { id: article.id },
@@ -51,17 +71,17 @@ router.post('/', async (req, res) => {
         {
           model: Tag,
           as: 'tags',
-          attributes: ['name']
+          attributes: ['name'],
+          through: { attributes: [] }
         }
       ]
     });
 
     const transformedArticle = {
       ...fullArticle.toJSON(),
-      tags: fullArticle.tags.map(tag => tag.name)
     };
 
-
+    delete transformedArticle.tags;
 
     res.status(201).json({ message: "Article created successfully", article: transformedArticle });
 
@@ -70,5 +90,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: "Internal server error", error });
   }
 });
+
+
 
 module.exports = router;
