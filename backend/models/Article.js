@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../db');
 
-class Article extends Model {}
+class Article extends Model { }
 
 Article.init({
   slug: DataTypes.STRING,
@@ -10,32 +10,23 @@ Article.init({
   body: DataTypes.TEXT,
   favoritedCount: DataTypes.INTEGER,
   favorited: DataTypes.BOOLEAN,
-  email: {  
-    type: DataTypes.STRING,
+  tagList: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: true
+  },
+  userId: {
+    type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Users',
-      key: 'email'
+      key: 'id'
     }
   },
-  // tag:{
-  //   type:DataTypes.STRING,
-  //   allowNull: true,
-  //   references :{
-  //     model: "Tags",
-  //     key:"id"
-  //   }
-  // }
- 
 }, {
   sequelize,
   modelName: 'Article',
-//  table: 'articles',
   timestamps: true
 });
 
-sequelize.sync().then(() => {
-  console.log("Article Database synced successfully");
-});
 
 module.exports = Article;
