@@ -3,6 +3,8 @@ const router = express.Router();
 const { registerUser } = require('../services/userService');
 
 router.post('/', async (req, res) => {
+  console.log("in signup route");
+
   const { username, email, password, bio, image } = req.body;
 
   try {
