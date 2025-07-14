@@ -1,23 +1,22 @@
-const { Sequelize, DataTypes } = require('sequelize');
-
-const sequelize = new Sequelize('postgres://postgres:root@localhost:5432/blognest');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../db'); 
 
 const Tag = sequelize.define('Tag',{
   name:{
     type: DataTypes.STRING,
     allowNull: true,
-    unique: true,
   },
-   articleId: {
-    type: DataTypes.INTEGER,
+  //  articleId: {
+  //   type: DataTypes.INTEGER,
+  //   allowNull: true
+  // },
+   articleIdList: {//added
+    type: DataTypes.ARRAY(DataTypes.INTEGER),
     allowNull: true
-  }
+  },
 },{
-  timestamps: false
-});
-
-sequelize.sync({force: true}).then(() => {
-  console.log(" Tag Database synced successfully");
+  timestamps: false,
+  tableName: 'Tags'
 });
 
 module.exports = Tag;

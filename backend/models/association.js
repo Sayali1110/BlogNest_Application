@@ -1,20 +1,30 @@
+const sequelize = require('../db');
+const User = require('../models/User')
 const Article = require('../models/Article');
 const Tag = require('../models/Tag');
-const User = require('../models/User')
 
 
-// One Article has many Tags
-Article.hasMany(Tag, { foreignKey: 'articleId', as: 'tags' });
+Article.belongsTo(User, { foreignKey: 'userId', as: 'author' });
+User.hasMany(Article, { foreignKey: 'userId', as: 'articles' });
 
-// One Tag belongs to one Article
-Tag.belongsTo(Article, { foreignKey: 'articleId', as: 'article' });
+Article.belongsToMany(Tag, {
+  through: 'ArticleTags',
+  as: 'tags',
+  foreignKey: 'articleId',
+});
+Tag.belongsToMany(Article, {
+  through: 'ArticleTags',
+  as: 'articles',
+  foreignKey: 'tagId',
+});
 
 
-//one user has many articles
-User.hasMany(Article, { foreignKey: 'email', as: 'articles' });
-//one article belongs to one user
-Article.belongsTo(User, { foreignKey: 'email', targetKey: 'email', as: 'author' });
 
+
+
+
+// Article.hasMany(Tag, { foreignKey: 'articleId', as: 'tags' });
+// Tag.belongsTo(Article, { foreignKey: 'articleId', as: 'article' });
 
 module.exports = { User, Article, Tag };
 
