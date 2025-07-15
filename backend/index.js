@@ -9,7 +9,7 @@ require('./models/Tag');
 
 require('./models/association');
 
-sequelize.sync({ force: true })
+sequelize.sync({ alter: true })
   .then(() => {
     console.log("All models synced successfully");
   })
@@ -21,13 +21,14 @@ const homeRoute = require('./routes/homeRoute');
 const signUpRoute = require('./routes/signUpRoute');
 const loginRoute = require('./routes/loginRoute');
 const articleRoute = require('./routes/articleRoute');
-const tagRoute = require('./routes/tagRoute')
+const tagRoute = require('./routes/tagRoute');
 
 app.use('/', homeRoute);
 app.use('/signUp', signUpRoute);
 app.use('/login', authentication, loginRoute);
-app.use('/article', articleRoute);
-app.use('/tags', tagRoute)
+app.use('/', articleRoute);
+app.use('/', tagRoute)
+
 
 app.listen(6000, function () {
   console.log("server is running on port no. 6000");
