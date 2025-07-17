@@ -1,8 +1,9 @@
 const { Model } = require('sequelize');
 const Tag = require('../models/Tag');
 const Article = require('../models/Article');
-const getAllTags = async (id) => {
 
+//fetch tags
+const getAllTags = async (id) => {
     if (!id) {
         return await Tag.findAll({
             attributes: ['name'],
@@ -16,7 +17,7 @@ const getAllTags = async (id) => {
 }
 
 
-
+//creating tag
 const createTags = async (tags) => {
     if (!Array.isArray(tags) || tags.length === 0) {
         throw new Error('Tags are empty or not an array');
