@@ -4,12 +4,17 @@ const sequelize = require('../db');
 class Article extends Model { }
 
 Article.init({
-  slug: DataTypes.STRING,
-  title: DataTypes.STRING,
+  slug: {
+    type: DataTypes.STRING,
+    allowNull : false,
+  },
+  title:{
+    type: DataTypes.STRING,
+    allowNull : false,
+    unique: true,
+  },
   description: DataTypes.STRING,
   body: DataTypes.TEXT,
-  favoritedCount: DataTypes.INTEGER,
-  favorited: DataTypes.BOOLEAN,
   tagList: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true
@@ -22,9 +27,14 @@ Article.init({
       key: 'id'
     }
   },
+  favorites: {
+    type: DataTypes.ARRAY(DataTypes.INTEGER),
+    allowNull: true,
+  },
 }, {
   sequelize,
   modelName: 'Article',
+  tableName: 'Articles',
   timestamps: true
 });
 
