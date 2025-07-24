@@ -4,10 +4,10 @@ const User = require('../models/User');
 const Tag = require('../models/Tag');
 const Comment = require('../models/Comment');
 
-const getGlobalArticles = async (tagName, limit, offset, userID) => {
+const getGlobalArticles = async (tagName, limit, offset, userID, author, favorited) => {
     console.log("limit and offset received", limit, offset);
 
-    let articles ;
+    let articles;
     let totalCount;
 
     let follow;
@@ -18,14 +18,109 @@ const getGlobalArticles = async (tagName, limit, offset, userID) => {
         follow = true;
     }
 
+
+
+
+    if (tagName) {
+        // Fetch articles if tag is present
+        console.log("Fetching articles with tag:", tagName);
+        const tag = await Tag.findOne({ where: { name: tagName } });
+
+        if (!tag || !tag.articleIdList || tag.articleIdList.length === 0) {
+            return { articles: [], articlesCount: 0 };
+        }
+
+        totalCount = tag.articleIdList.length;
+
+        articles = await Article.findAll({
+            where: { id: tag.articleIdList },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt']],
+            include: [
+                {
+                    model: User,
+                    as: 'author',
+                    attributes: ['username', 'bio', 'image']
+                },
+            ],
+            attributes: {
+                exclude: ['userId']
+            }
+        });
+    }
+
+    else if (author) {
+        const authorUser = await User.findOne({ where: { username: author } });
+        if (authorUser) {
+            articles = await Article.findAll({
+                where: { userId: authorUser.id },
+                limit,
+                offset,
+                order: [['createdAt', 'DESC']],
+                include: [
+                    {
+                        model: User,
+                        as: 'author',
+                        attributes: ['username', 'bio', 'image']
+                    },
+                ],
+                attributes: {
+                    exclude: ['userId']
+                }
+            });
+            totalCount = await Article.count({ where: { userId: authorUser.id } });
+        } else {
+            return { articles: [], articlesCount: 0 };
+        }
+    }
+
+    else if (favorited) {
+        const favoriteUser = await User.findOne({ where: { username: favorited } });
+
+        if (favoriteUser) {
+            articles = await Article.findAll({
+                where: {
+                    favorites: {
+                        [Op.contains]: [favoriteUser.id]
+                    }
+                },
+                limit,
+                offset,
+                order: [['createdAt', 'DESC']],
+                include: [
+                    {
+                        model: User,
+                        as: 'author',
+                        attributes: ['username', 'bio', 'image']
+                    },
+                ],
+                attributes: {
+                    exclude: ['userId']
+                }
+            });
+
+            totalCount = await Article.count({
+                where: {
+                    favorites: {
+                        [Op.contains]: [favoriteUser.id]
+                    }
+                }
+            });
+
+        } else {
+            return { articles: [], articlesCount: 0 };
+        }
+    }
+
     // Fetch articles if tag is not present
-    if (!tagName) {
+    else {
         totalCount = await Article.count();
 
         console.log("Fetching articles without tag");
         articles = await Article.findAll({
             limit: limit,
-            offset: offset ,
+            offset: offset,
             order: [['createdAt']],
             include: [
                 {
@@ -41,38 +136,11 @@ const getGlobalArticles = async (tagName, limit, offset, userID) => {
 
         console.log("Article favorites:", articles);
 
-    } else {
-        // Fetch articles if tag is present
-        console.log("Fetching articles with tag:", tagName);
-        const tag = await Tag.findOne({ where: { name: tagName } });
-
-        if (!tag || !tag.articleIdList || tag.articleIdList.length === 0) {
-            return { articles: [], articlesCount: 0 };
-        }
-
-          totalCount = tag.articleIdList.length;
-
-        articles = await Article.findAll({
-            where: { id: tag.articleIdList },
-            limit: limit,
-            offset: offset ,
-            order: [['createdAt']],
-            include: [
-                {
-                    model: User,
-                    as: 'author',
-                    attributes: ['username', 'bio', 'image']
-                },
-            ],
-            attributes: {
-                exclude: ['userId']
-            }
-        });
     }
 
 
     const formattedArticles = articles.map(article => {
-        
+
 
         //checking for favorites
         const favoritesArray = article.favorites || [];
@@ -121,7 +189,7 @@ const getComments = async (id, user) => {
         userID = user.id;
         console.log("userID ", userID);
 
-              followersCount = user.followers ? user.followers.length : 0;
+        followersCount = user.followers ? user.followers.length : 0;
         console.log("followers count: ", followersCount);
 
     }
@@ -164,8 +232,8 @@ const getComments = async (id, user) => {
         order: [['createdAt', 'DESC']]
     });
 
-     if (!comments || comments.length === 0) {
-        return []; 
+    if (!comments || comments.length === 0) {
+        return [];
     }
 
 
