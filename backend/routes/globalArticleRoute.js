@@ -31,16 +31,14 @@ router.get('/', async (req, res) => {
         const limit = req.query.limit || 3;
         const offset = req.query.offset || 0;
 
-         // const author = req.query.author;
-         // const favorited
-
-
+        const author = req.query.author;
+        const favorited = req.query.favorited
 
 
         console.log("article limit", limit);
         console.log("article offset", offset);
 
-        const articles = await getGlobalArticles(tag, limit, offset, userID);
+        const articles = await getGlobalArticles(tag, limit, offset, userID, author, favorited);
         res.status(200).json(articles);
     } catch (error) {
         console.error('Error fetching articles:', error);
