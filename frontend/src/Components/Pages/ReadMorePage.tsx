@@ -96,7 +96,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
             setIsFavorited(!isFavorited);
             setArticle(article);
 
-            const likeResponse = await postFavorite(article.slug, isFavorited);
+            const likeResponse = await postFavorite(article.slug);
             console.log("likes response..", likeResponse);
             console.log("likes response..", likeResponse.favorited);
             console.log("likes count", likeResponse.favoritesCount);
