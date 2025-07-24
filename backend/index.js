@@ -31,7 +31,6 @@ const signUpRoute = require('./routes/signUpRoute');
 const loginRoute = require('./routes/loginRoute');
 const articleRoute = require('./routes/articleRoute');
 const tagRoute = require('./routes/tagRoute');
-const myArticlesRoute = require('./routes/myArticlesRoute');
 const profileRoute = require('./routes/profileRoute');
 const feedArticles = require('./routes/feedRoute');
 const globalArticles = require('./routes/globalArticleRoute');
@@ -41,7 +40,6 @@ app.use('/api/home', homeRoute);
 app.use('/api/users', signUpRoute);
 app.use('/api/users/login', loginRoute);
 
-//app.use('/api/myArticles',authentication, myArticlesRoute);//myArticles, favoriteArticles
 app.use('/api/articles/feed', authentication, feedArticles);//user feed
 
 app.use('/api/articles', globalArticles );//get all articles, comments
