@@ -1,75 +1,72 @@
 const Article = require('../models/Article');
 const User = require('../models/User');
 const Tag = require('../models/Tag');
+const Comment = require('../models/Comment');
 
-const getAllArticles = async (tagName, limit, offset) => {
-    console.log("limit and offset received", limit, offset);
+// const unlikeArticle = async () => {
 
-    //fetch article if tag is not present
-    if (!tagName) {
-        console.log("limit and offset", limit, offset)
-        return await Article.findAll({
-            limit: limit,
-            offset: limit * offset,
-            order: [['createdAt']],
-            include: [
-                {
-                    model: User,
-                    as: 'author',
-                    attributes: ['username', 'email', 'bio', 'image']
-                },
-            ]
-        })
+// }
+
+const likeArticle = async (slug, userID) => {
+
+    const article = await Article.findOne({ where: { slug } });
+    console.log("article found", article);
+    if (!article) return { error: 'Article not found' };
+
+    const authorId = article.id;
+    console.log("author id", authorId);
+
+    const author = await User.findByPk(authorId);
+
+    const favoritesArray = article.favorites || [];
+    console.log("initial favoritesArray", favoritesArray);
+
+    let updatedFavorites;
+    let favorited;
+
+    console.log("user id fetched", userID);
+    if (favoritesArray.includes(userID)) {
+        updatedFavorites = favoritesArray.filter(id => id !== userID);
+        favorited = false;
     }
-
-    //fetch articles if tag is present
     else {
-            const tag = await Tag.findOne({ where: { name: tagName } });
-            console.log("Article Id", tag)
-            if (!tag) {
-                return [];
-            }
-            return await Article.findAll({
-                where: { id: tag.articleIdList },
-                limit: limit,
-                offset: limit * offset,
-                include: [
-                    {
-                        model: User,
-                        as: 'author',
-                        attributes: ['username', 'email', 'bio', 'image']
-                    },
-                ]
-            });
+        updatedFavorites = [...favoritesArray, userID];
+        favorited = true;
     }
-}
 
-
-const getAllMyArticles = async (author, limit, offset) => {
-    //match username to author = User retun uid
-    //from uid find article id = Article return article 
-    const user = await User.findOne({ where: { username: author } });
-    console.log("username found", user);
-    const uId = user.id;
-    console.log("userId", uId);
-
-    return await Article.findAll({
-        where: { userId: uId },
-        limit: limit,
-        offset: limit * offset,
+    await article.update({
+        favorites: updatedFavorites,
     });
 
+    console.log("updated favoritesArray", favoritesArray);
+
+    return {
+        article: {
+            slug: article.slug,
+            title: article.title,
+            description: article.description,
+            body: article.body,
+            createdAt: article.createdAt,
+            updatedAt: article.updatedAt,
+            tagList: article.tagList || [],
+            author: {
+                username: author.username,
+                bio: author.bio,
+                image: author.image,
+            },
+            favorited: favorited,
+            favoritesCount: updatedFavorites.length
+        }
+    };
 }
-
-
-
-
 
 
 
 //post article
-const createArticle = async (data) => {
-    const { slug, title, description, body, favoritedCount, favorited, email, tags } = data;
+const createArticle = async (articleData, articleSlug, email) => {
+    // const { title, description, body, favoritedCount, favorited, tags } = data;
+
+    const tags = articleData.tagList;
 
     const user = await User.findOne({ where: { email } });
     if (!user) {
@@ -77,12 +74,10 @@ const createArticle = async (data) => {
     }
 
     const article = await Article.create({
-        slug,
-        title,
-        description,
-        body,
-        favoritedCount,
-        favorited,
+        slug: articleSlug,
+        title: articleData.title,
+        description: articleData.description,
+        body: articleData.body,
         userId: user.id,
         tagList: tags
     });
@@ -123,5 +118,55 @@ const createArticle = async (data) => {
     return { message: "Article created successfully", article: transformedArticle };
 };
 
-module.exports = { getAllArticles, createArticle, getAllMyArticles };
+//creating comment
+const createComment = async (data, slug, userID) => {
+
+    const article = await Article.findOne({ where: { slug: slug } });
+    console.log("article", article);
+    const id = article.id;
+    console.log("articleId", id);
+
+    const comment = await Comment.create({
+        body: data.body,
+        articleId: id,
+        userId: userID,
+    });
+
+    const fullComment = await Comment.findOne({
+        where: { id: comment.id },
+        include: [
+            {
+                model: User,
+                as: 'user',
+                attributes: ['username', 'bio', 'image', 'following', 'followers'],
+
+            }
+        ]
+    })
+
+    const formattedComment = {
+    
+            id: fullComment.id,
+            body: fullComment.body,
+            updatedAt: fullComment.updatedAt,
+            createdAt: fullComment.createdAt,
+            author: {
+                username: fullComment.user.username,
+                bio: fullComment.user.bio || null,
+                image: fullComment.user.image || null,
+                following: fullComment.user.following.includes(userID),
+                followersCount: fullComment.user.followers.length
+            }
+        
+    };
+
+
+
+
+    return { comment: formattedComment };
+}
+
+
+
+module.exports = { createArticle, createComment, likeArticle};
 
