@@ -6,10 +6,6 @@ const Tag = sequelize.define('Tag',{
     type: DataTypes.STRING,
     allowNull: true,
   },
-  //  articleId: {
-  //   type: DataTypes.INTEGER,
-  //   allowNull: true
-  // },
    articleIdList: {//added
     type: DataTypes.ARRAY(DataTypes.INTEGER),
     allowNull: true
