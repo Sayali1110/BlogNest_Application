@@ -6,7 +6,7 @@ const userLogin = require('../services/loginService');
 
 route.post('/', async (req, res) => {
 
-    const { email, password } = req.body;
+    const { email, password } = req.body.user;
 
     try {
         console.log("in login route");
@@ -17,12 +17,12 @@ route.post('/', async (req, res) => {
         const bio = result?.existingUser?.bio;
         const image = result?.existingUser?.image;
 
-        const User = { username: result.existingUser.username, bio: bio, image: image, token: result.token, email: result.existingUser.email };
+        const user = { username: result.existingUser.username, bio: bio, image: image, token: result.token, email: result.existingUser.email };
 
         if (result.token) {
             console.log("in if condition");
             res.status(200).json({
-                User
+                user
             });
         }
         else {
