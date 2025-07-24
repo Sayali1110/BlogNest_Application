@@ -6,7 +6,8 @@ const sequelize = new Sequelize({
   port: 5432,
   username: "postgres",
   password: "root",
-  database: "blognest"
+  database: "blognest",
+  logging: false
 });
 
 sequelize.authenticate()
