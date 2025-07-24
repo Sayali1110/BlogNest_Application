@@ -14,13 +14,13 @@ async function userLogin(email, password) {
         }
 
         const isMatch = await bcrypt.compare(password, existingUser.password);
-        console.log("token matching", isMatch);
+        console.log("password matched", isMatch);
 
         if (!isMatch) {
             return { status: 401, meassage: "Inavlid Password" };
         }
 
-        const token = jwt.sign({ userEmail: existingUser.email }, 'secret-code', { expiresIn: '24h' });
+        const token = jwt.sign({ userEmail: existingUser.email }, 'aligned-automation', { expiresIn: '30d' });
         console.log("token generation for login", token);
 
         return {existingUser, token};
