@@ -1,13 +1,13 @@
 import axios from "axios"
 import { Main_URL } from "../constants"
 
-export const postFavorite = async (slug: string, isFavorited: boolean) => {
+export const postFavorite = async (slug: string) => {
     try {
         console.log("In post favourite service", )
         const token = localStorage.getItem("token");
         const response = await axios({
-            method: isFavorited ? "DELETE" : "POST",
-            url: `${Main_URL}/articles/${slug}/favorite`,
+            method: "POST",
+            url: `${Main_URL}/article/${slug}/favorites`,
             headers: {
                 Authorization: `Token ${token}`,
                 "Content-Type": "application/json",
