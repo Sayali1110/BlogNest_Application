@@ -12,7 +12,7 @@ export const postNewArticle = async (
     console.log("Fetched token from localStorage:", token);
     const response = await axios({
       method: "POST",
-      url: `${Main_URL}/articles`,
+      url: `${Main_URL}/article`,
       data: {
         article: {
           title,
