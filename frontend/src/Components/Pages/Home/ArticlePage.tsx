@@ -61,7 +61,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ articles }) => {// 3 articles
             setArticle(articles)
           }
 
-          const likeResponse = await postFavorite(article.slug, article.favorited);
+          const likeResponse = await postFavorite(article.slug);
           return article;
         }
       })
