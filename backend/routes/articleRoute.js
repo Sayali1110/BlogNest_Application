@@ -4,51 +4,112 @@ const Article = require('../models/Article');
 const Tag = require('../models/Tag');
 const User = require('../models/User');
 
-const { getAllArticles, createArticle, getAllMyArticles } = require('../services/articleService')
+const jwt = require('jsonwebtoken');
 
-router.get('/articles', async (req, res) => {
-  try {
-    const tag = req.query.tag;
-    const limit = req.query.limit || 3;
-    const offset = req.query.offset || 0;
+const { createArticle, createComment, likeArticle } = require('../services/articleService');
 
+//giving like
+router.post('/:slug/favorites', async (req, res) => {
+  const userEmail = req.user.userEmail;
+  console.log("Log in user email:", userEmail);
 
-    console.log("article limit", limit);
-    console.log("article offset", offset);
+  const user = await User.findOne({ where: { email: userEmail } });
+  console.log("user from Article Table", user);
+  const userID = user.id;
+  console.log("user iD", userID);
 
-    const articles = await getAllArticles(tag, limit, offset);
-    res.status(200).json(articles);
-  } catch (error) {
-    console.error('Error fetching articles:', error);
-    res.status(500).json({ message: 'Failed to fetch articles' });
-  }
+  const slug = req.params.slug;
+
+  const result = await likeArticle(slug, userID);
+  res.status(201).json(result);
 });
 
-router.get('/feed', async (req, res) => {
+
+//posting comment
+router.post('/:slug/comments', async (req, res) => {
   try {
-    const author = req.query.author;
-    const limit = req.query.limit;
-    const offset = req.query.offset;
-    const articles = await getAllMyArticles(author, limit, offset);
-    res.status(200).json(articles);
-  }
-  catch (error) {
-    console.log("error fetching feed", error);
-    res.status(500).json("internal server error");
+
+    const userEmail = req.user.userEmail;
+    // const user = req.user;
+    // console.log("user", user);
+    console.log("Log in user email:", userEmail);
+
+    const user = await User.findOne({ where: { email: userEmail } });
+    console.log("user from Article Table", user);
+    const userID = user.id;
+    console.log("user iD", userID);
+
+    const data = req.body;
+    const slug = req.params.slug;
+    console.log("data:", data);
+    console.log("slug:", slug);
+
+    const body = data.body || data.comment?.body;
+
+    if (!body) {
+      return res.status(400).json({ message: "Comment body is required" });
+    }
+
+    const result = await createComment({ body }, slug, userID);
+    res.status(201).json(result);
+
+  } catch (error) {
+    console.log("Error posting comment", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+
   }
 })
 
-
-router.post('/article', async (req, res) => {
+//fetching comment
+router.get('/:slug/comments', async (req, res) => {
   try {
-    const articleData = req.body;
-    const result = await createArticle(articleData);
+    const slug = req.params.slug;
+    const userEmail = req.user?.userEmail || null;
+
+    const article = await Article.findOne({ where: { slug } });
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    const comments = await getComments(article.id, userEmail);
+    res.status(200).json({ comments });
+
+  } catch (error) {
+    console.log("Error fetching comments", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+});
+
+
+
+//posting single article
+router.post('/', async (req, res) => {
+
+  try {
+
+    const userEmail = req.user?.userEmail || null;
+    console.log("user email for new article", userEmail);
+
+    const articleData = req.body.article;
+
+    console.log("title", articleData);
+
+    const slug = articleData.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    const result = await createArticle(articleData, slug, userEmail);
     res.status(201).json(result);
   } catch (error) {
     console.error("Error creating article:", error);
     res.status(500).json({ message: "Internal server error", error });
   }
 });
+
+
+
 
 module.exports = router;
 
