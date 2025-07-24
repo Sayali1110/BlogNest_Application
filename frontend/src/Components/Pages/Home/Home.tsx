@@ -73,7 +73,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
   const fetchArticles = async () => {
 
     try {
-
+// pages * 3 - pages * 2
       const offset = (page - 1) * articleOnOnePage;
       let articleResponse: ArticleResponse;
 
