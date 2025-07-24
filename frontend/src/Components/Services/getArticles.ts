@@ -22,13 +22,15 @@ export const getArticles = async (page: number, articleOnOnePage: number, tag?: 
       if (author) parameters.author = author;
     }
     
-    const headers = token ? { Authorization: `Token ${token}` } : {};
+    const headers = token ? { Authorization: `Token ${token}`} : {};
 
-    const url = isFeed ? `${Main_URL}/articles/feed` : `${Main_URL}/articles`;
+     const url = isFeed ? `${Main_URL}/articles/feed` : `${Main_URL}/articles`;
+  
 
     const response = await axios.get(url, {
       params: parameters,
       headers,
+     
     });
 
     console.log('Articles data:', response.data);
