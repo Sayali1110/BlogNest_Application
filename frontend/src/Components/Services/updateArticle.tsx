@@ -18,7 +18,7 @@ export const updateArticle = async (
 
     const response = await axios({
         method: "PUT",
-        url: `${Main_URL}/articles/${slug}`,
+        url: `${Main_URL}/article/${slug}`,
         data: {
             article: articleData
         },
