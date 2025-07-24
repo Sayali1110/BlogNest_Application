@@ -43,6 +43,7 @@ app.use('/api/users/login', loginRoute);
 
 //app.use('/api/myArticles',authentication, myArticlesRoute);//myArticles, favoriteArticles
 app.use('/api/articles/feed', authentication, feedArticles);//user feed
+
 app.use('/api/articles', globalArticles );//get all articles, comments
 
 
