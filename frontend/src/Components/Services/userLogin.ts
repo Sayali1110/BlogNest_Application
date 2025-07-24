@@ -8,7 +8,7 @@ export const userLogin = async (email: string, password: string) => {
             method: "POST",
             url: `${Main_URL}/users/login`,
         });
-        const token = data.user.token;
+        const token = data?.user?.token;
         console.log("token", token)
         return { token, user: data.user };
     }
@@ -17,3 +17,4 @@ export const userLogin = async (email: string, password: string) => {
         throw error;
     }
 }
+
