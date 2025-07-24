@@ -11,7 +11,7 @@ export const postComment = async (slug: string, body: string,) => {
                 "Content-Type": "application/json",
             },
             method: "POST",
-            url: `${Main_URL}/articles/${slug}/comments`,
+            url: `${Main_URL}/article/${slug}/comments`,
         });
         return (data.comment);
     }
