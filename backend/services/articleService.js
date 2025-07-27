@@ -3,10 +3,6 @@ const User = require('../models/User');
 const Tag = require('../models/Tag');
 const Comment = require('../models/Comment');
 
-// const unlikeArticle = async () => {
-
-// }
-
 const likeArticle = async (slug, userID) => {
 
     const article = await Article.findOne({ where: { slug } });
@@ -118,6 +114,60 @@ const createArticle = async (articleData, articleSlug, email) => {
     return { message: "Article created successfully", article: transformedArticle };
 };
 
+//update article
+const deleteArticle = async (slug) => {
+    const article = await Article.findOne({ where: { slug: slug } });
+    if (!article) {
+        res.status(403).json({ message: "article not found" });
+    }
+    article.destroy();
+
+    return {
+        message: {
+            body: ["Article deleted successfully"]
+        }
+    }
+
+
+}
+
+//upadte article
+const updateArticle = async (slug, articleData) => {
+    console.log("slug", slug);
+    const article = await Article.findOne({ where: { slug: slug } });
+
+    if (!article) {
+        return ({ message: "article not found" });
+    }
+
+    const generateSlug = (title) => {
+        return title
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    };
+
+
+    const { title, description, body, tagList } = articleData.article;
+
+
+    if (title) {
+        article.title = title;
+        article.slug = generateSlug(title);
+    }
+    if (description) article.description = description;
+    if (body) article.body = body;
+    if (tagList) article.tagList = tagList;
+
+    await article.save();
+    console.log("new article in service ", article);
+
+    return article;
+
+
+}
+
 //creating comment
 const createComment = async (data, slug, userID) => {
 
@@ -145,19 +195,19 @@ const createComment = async (data, slug, userID) => {
     })
 
     const formattedComment = {
-    
-            id: fullComment.id,
-            body: fullComment.body,
-            updatedAt: fullComment.updatedAt,
-            createdAt: fullComment.createdAt,
-            author: {
-                username: fullComment.user.username,
-                bio: fullComment.user.bio || null,
-                image: fullComment.user.image || null,
-                following: fullComment.user.following.includes(userID),
-                followersCount: fullComment.user.followers.length
-            }
-        
+
+        id: fullComment.id,
+        body: fullComment.body,
+        updatedAt: fullComment.updatedAt,
+        createdAt: fullComment.createdAt,
+        author: {
+            username: fullComment.user.username,
+            bio: fullComment.user.bio || null,
+            image: fullComment.user.image || null,
+            following: fullComment.user.following.includes(userID),
+            followersCount: fullComment.user.followers.length
+        }
+
     };
 
 
@@ -166,7 +216,35 @@ const createComment = async (data, slug, userID) => {
     return { comment: formattedComment };
 }
 
+//fetch single article
+
+const getSingleArticle = async (req, res) => {
+    try {
+        const { slug } = req.params;
+
+        if (!slug || slug === "undefined") {
+            return res.status(400).json({ message: "Invalid or missing slug" });
+        }
+
+        const article = await Article.findOne({ where: { slug } });
+
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        return res.status(200).json({ article });
+
+    } catch (error) {
+        console.error("Error fetching article", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 
-module.exports = { createArticle, createComment, likeArticle};
+
+
+
+
+
+module.exports = { createArticle, createComment, likeArticle, deleteArticle, updateArticle, getSingleArticle };
 
