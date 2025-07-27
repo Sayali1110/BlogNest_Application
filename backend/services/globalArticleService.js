@@ -8,17 +8,7 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
     console.log("limit and offset received", limit, offset);
 
     let articles;
-    let totalCount;
-
-    let follow;
-
-    if (userID) {
-        follow = false;
-    } else {
-        follow = true;
-    }
-
-
+    let totalCount;//total articles
 
 
     if (tagName) {
@@ -41,12 +31,9 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
                 {
                     model: User,
                     as: 'author',
-                    attributes: ['username', 'bio', 'image']
+                    attributes: ['id', 'username', 'bio', 'image']
                 },
             ],
-            attributes: {
-                exclude: ['userId']
-            }
         });
     }
 
@@ -62,12 +49,9 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
                     {
                         model: User,
                         as: 'author',
-                        attributes: ['username', 'bio', 'image']
+                        attributes: ['id','username', 'bio', 'image']
                     },
                 ],
-                attributes: {
-                    exclude: ['userId']
-                }
             });
             totalCount = await Article.count({ where: { userId: authorUser.id } });
         } else {
@@ -92,12 +76,9 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
                     {
                         model: User,
                         as: 'author',
-                        attributes: ['username', 'bio', 'image']
+                        attributes: ['id', 'username', 'bio', 'image']
                     },
                 ],
-                attributes: {
-                    exclude: ['userId']
-                }
             });
 
             totalCount = await Article.count({
@@ -126,20 +107,18 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
                 {
                     model: User,
                     as: 'author',
-                    attributes: ['username', 'bio', 'image']
+                    attributes: ['id', 'username', 'bio', 'image']
                 },
             ],
-            attributes: {
-                exclude: ['userId']
-            }
-        });
 
-        console.log("Article favorites:", articles);
+        });
 
     }
 
 
-    const formattedArticles = articles.map(article => {
+    const formattedArticles = await Promise.all(articles.map(async (article) => {
+
+
 
 
         //checking for favorites
@@ -147,6 +126,19 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
         const isFavorited = userID ? favoritesArray.includes(userID) : false;
 
         //checking for following
+        console.log("Articles:", article);
+        console.log("auhtor", article.author);
+
+        console.log("auhtor", article.author.id);
+
+        const match = article.author.id;
+        const authorUser = await User.findByPk(match);
+
+        const followersArray = authorUser.followers || [];
+        console.log("followers", followersArray);
+        const isFollowing = userID ? followersArray.includes(userID) : false;
+
+
 
         return {
             slug: article.slug,
@@ -160,13 +152,13 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
                 username: article.author.username,
                 bio: article.author.bio,
                 image: article.author.image,
-                following: follow,
-                followersCount: 0,
+                following: isFollowing,
+                followersCount: followersArray.length ,
             },
             favorited: isFavorited,
             favoritesCount: article.favorites ? article.favorites.length : 0,
         };
-    });
+    }));
 
     return {
         articles: formattedArticles,
