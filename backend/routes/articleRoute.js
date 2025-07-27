@@ -6,7 +6,8 @@ const User = require('../models/User');
 
 const jwt = require('jsonwebtoken');
 
-const { createArticle, createComment, likeArticle } = require('../services/articleService');
+const { createArticle, createComment, likeArticle, deleteArticle, updateArticle } = require('../services/articleService');
+const { getComments } = require('../services/globalArticleService');
 
 //giving like
 router.post('/:slug/favorites', async (req, res) => {
@@ -80,8 +81,6 @@ router.get('/:slug/comments', async (req, res) => {
   }
 });
 
-
-
 //posting single article
 router.post('/', async (req, res) => {
 
@@ -109,8 +108,66 @@ router.post('/', async (req, res) => {
 });
 
 
+//deleting article
+router.delete('/:slug', async (req, res) => {
+  try {
+
+    const { slug } = req.params;
+
+    console.log("delete article", slug);
+
+    const article = deleteArticle(slug);
+
+    res.status(200).json(article);
+
+
+  } catch (error) {
+    console.error("error deleting article", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+})
+
+//updating article
+router.put('/:slug', async (req, res) => {
+  const userEmail = req.user?.userEmail || null;
+
+  const user = await User.findOne({ where: {email: userEmail}});
+  console.log("user found for upasting", user);
+
+  const { slug } = req.params;
+
+  const articleData = req.body;
+
+  try {
+
+    const updatedArticle = await updateArticle(slug, articleData);
+    console.log("afet upadted article", updatedArticle);
+
+    const newSlug = updatedArticle.slug;
+    console.log("new slug", newSlug);
+
+    try {
+      await getComments(updatedArticle.id, user);
+    } catch (commentError) {
+      console.error("Failed to fetch comments:", commentError.message);
+    }
+
+
+    return res.json({
+      message: "Article updated successfully",
+      article: updatedArticle
+    });
+
+  }
+  catch (error) {
+    console.error("error", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+
+})
+
+
+
 
 
 module.exports = router;
-
-
