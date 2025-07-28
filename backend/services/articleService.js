@@ -56,8 +56,6 @@ const likeArticle = async (slug, userID) => {
     };
 }
 
-
-
 //post article
 const createArticle = async (articleData, articleSlug, email) => {
     // const { title, description, body, favoritedCount, favorited, tags } = data;
