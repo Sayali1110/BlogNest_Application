@@ -26,7 +26,7 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
             where: { id: tag.articleIdList },
             limit: limit,
             offset: offset,
-            order: [['createdAt']],
+            order: [['createdAt', 'DESC']],
             include: [
                 {
                     model: User,
@@ -49,7 +49,7 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
                     {
                         model: User,
                         as: 'author',
-                        attributes: ['id','username', 'bio', 'image']
+                        attributes: ['id', 'username', 'bio', 'image']
                     },
                 ],
             });
@@ -102,7 +102,7 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
         articles = await Article.findAll({
             limit: limit,
             offset: offset,
-            order: [['createdAt']],
+            order: [['createdAt', 'DESC']],
             include: [
                 {
                     model: User,
@@ -117,9 +117,6 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
 
 
     const formattedArticles = await Promise.all(articles.map(async (article) => {
-
-
-
 
         //checking for favorites
         const favoritesArray = article.favorites || [];
@@ -138,8 +135,6 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
         console.log("followers", followersArray);
         const isFollowing = userID ? followersArray.includes(userID) : false;
 
-
-
         return {
             slug: article.slug,
             title: article.title,
@@ -153,7 +148,7 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
                 bio: article.author.bio,
                 image: article.author.image,
                 following: isFollowing,
-                followersCount: followersArray.length ,
+                followersCount: followersArray.length,
             },
             favorited: isFavorited,
             favoritesCount: article.favorites ? article.favorites.length : 0,
@@ -170,36 +165,35 @@ const getGlobalArticles = async (tagName, limit, offset, userID, author, favorit
 
 
 //fethcing comments
-const getComments = async (id, user) => {
+const getComments = async (id) => {
+    //id- article id
+    //user - user
+    console.log(" article id ", id);
 
-    console.log("user", user);
-
-    let userID = null;
+    //for finding if user is following author or not
+    let userID;
     let followersCount = 0;
 
-    if (user) {
-        userID = user.id;
-        console.log("userID ", userID);
+    // if (user) {
+    //     userID = user.id;
+    //     console.log("userID ", userID);
 
-        followersCount = user.followers ? user.followers.length : 0;
-        console.log("followers count: ", followersCount);
+    //     followersCount = user.followers ? user.followers.length : 0;
+    //     console.log("followers count: ", followersCount);
 
-    }
-    const article = await Article.findOne({
-        where: { userId: id }
-    })
+    // }
 
-    if (!article) {
-        console.log("No article found for slug:");
-        return [];
-    }
+    // const article = await Article.findOne({
+    //     where: { userId: id }
+    // })
 
-    console.log("author", article);
+    const article = await Article.findByPk(id);
+
+    console.log("article for comment", article);
 
     const authorId = article.userId;
 
     console.log("author id", authorId);
-
 
     const match = await User.findOne({
         where: {
@@ -211,7 +205,7 @@ const getComments = async (id, user) => {
 
     console.log("match", match);
 
-
+    //
     const comments = await Comment.findAll({
         where: { articleId: id },
         include: [
@@ -233,13 +227,6 @@ const getComments = async (id, user) => {
 
         const commentAuthor = comment.user || {};
         const isFollowing = !!match;
-
-
-        // const followingArray = user.following || [];
-
-
-        // const isFollowing = currentUser ? currentUser.following.includes(authorId) : false;
-
 
         return {
             id: comment.id,
