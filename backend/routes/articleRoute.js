@@ -61,25 +61,6 @@ router.post('/:slug/comments', async (req, res) => {
   }
 })
 
-//fetching comment
-router.get('/:slug/comments', async (req, res) => {
-  try {
-    const slug = req.params.slug;
-    const userEmail = req.user?.userEmail || null;
-
-    const article = await Article.findOne({ where: { slug } });
-    if (!article) {
-      return res.status(404).json({ message: "Article not found" });
-    }
-
-    const comments = await getComments(article.id, userEmail);
-    res.status(200).json({ comments });
-
-  } catch (error) {
-    console.log("Error fetching comments", error);
-    res.status(500).json({ message: "Internal Server Error", error });
-  }
-});
 
 //posting single article
 router.post('/', async (req, res) => {
@@ -131,8 +112,7 @@ router.delete('/:slug', async (req, res) => {
 router.put('/:slug', async (req, res) => {
   const userEmail = req.user?.userEmail || null;
 
-  const user = await User.findOne({ where: {email: userEmail}});
-  console.log("user found for upasting", user);
+  const user = await User.findOne({ where: { email: userEmail } });
 
   const { slug } = req.params;
 
@@ -141,21 +121,23 @@ router.put('/:slug', async (req, res) => {
   try {
 
     const updatedArticle = await updateArticle(slug, articleData);
-    console.log("afet upadted article", updatedArticle);
 
     const newSlug = updatedArticle.slug;
     console.log("new slug", newSlug);
 
-    try {
-      await getComments(updatedArticle.id, user);
-    } catch (commentError) {
-      console.error("Failed to fetch comments:", commentError.message);
-    }
+    console.log("in get comments");
 
+    const comments = await getComments(updatedArticle.id);
+
+
+
+    // await getComments(updatedArticle.id);
+    // console.log("after fethcing commetnts");
 
     return res.json({
       message: "Article updated successfully",
-      article: updatedArticle
+      article: updatedArticle,
+      comments: comments || []
     });
 
   }
