@@ -42,7 +42,7 @@ app.use('/api/users/login', loginRoute);
 
 app.use('/api/articles/feed', authentication, feedArticles);//user feed
 
-app.use('/api/articles', globalArticles );//get all articles, own articles, favorited articles, comments
+app.use('/api/articles', globalArticles );//get all articles, own articles, favorited articles, get comments
 
 
 app.use('/api/article', authentication, articleRoute);// post 1 article, like article, post comment , delete article, update article
