@@ -53,6 +53,8 @@ router.get('/', async (req, res) => {
 router.get('/:slug/comments', async (req, res) => {
     try {
 
+        console.log("in comments route");
+
         //extracting user
 
         const authHeader = req.headers['authorization'];
@@ -60,16 +62,17 @@ router.get('/:slug/comments', async (req, res) => {
 
         let user = null;
 
+
         if (token) {
             try {
                 const decoded = jwt.verify(token, 'aligned-automation');
                 const userEmail = decoded.userEmail;
                 const user = await User.findOne({ where: { email: userEmail } });
+                console.log("user inside try", user);
+
                 if (user) {
                     userID = user.id;
                 }
-
-
 
                 if (author) {
                     const articles = await getArticlesByAuthor(author, limit, offset);
@@ -86,8 +89,6 @@ router.get('/:slug/comments', async (req, res) => {
             }
         }
 
-
-
         const slug = req.params.slug;
         //const userEmail = req.user?.userEmail || null;
 
@@ -98,7 +99,7 @@ router.get('/:slug/comments', async (req, res) => {
 
         const id = article.id;
 
-        const comments = await getComments(id, user);
+        const comments = await getComments(id);
         res.status(200).json({ comments });
 
     } catch (error) {
