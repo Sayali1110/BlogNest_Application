@@ -47,7 +47,7 @@ const getFeedArticles = async (userID, limit, offset) => {
 
 
     const articlesFromFollowedAuthor = await Article.findAll({
-        order: [['createdAt']],
+        order: [['createdAt',  'DESC']],
         where: { userId: authorId },
         limit: limit,
         offset: offset,
