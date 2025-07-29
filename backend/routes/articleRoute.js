@@ -6,8 +6,7 @@ const User = require('../models/User');
 
 const jwt = require('jsonwebtoken');
 
-const { createArticle, createComment, likeArticle, deleteArticle, updateArticle } = require('../services/articleService');
-const { getComments } = require('../services/globalArticleService');
+const { createArticle, createComment, likeArticle, deleteArticle, updateArticle} = require('../services/articleService');
 
 //giving like
 router.post('/:slug/favorites', async (req, res) => {
@@ -113,6 +112,7 @@ router.put('/:slug', async (req, res) => {
   const userEmail = req.user?.userEmail || null;
 
   const user = await User.findOne({ where: { email: userEmail } });
+  console.log("user or finding folllwing", user);
 
   const { slug } = req.params;
 
@@ -120,24 +120,19 @@ router.put('/:slug', async (req, res) => {
 
   try {
 
-    const updatedArticle = await updateArticle(slug, articleData);
+    const updatedArticle = await updateArticle(slug, articleData, user);
 
     const newSlug = updatedArticle.slug;
+
     console.log("new slug", newSlug);
 
     console.log("in get comments");
 
-    const comments = await getComments(updatedArticle.id);
-
-
-
-    // await getComments(updatedArticle.id);
-    // console.log("after fethcing commetnts");
 
     return res.json({
       message: "Article updated successfully",
-      article: updatedArticle,
-      comments: comments || []
+      article: updatedArticle ,
+    
     });
 
   }
@@ -147,9 +142,6 @@ router.put('/:slug', async (req, res) => {
   }
 
 })
-
-
-
 
 
 module.exports = router;
