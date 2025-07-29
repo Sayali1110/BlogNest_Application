@@ -183,9 +183,7 @@ const getComments = async (id) => {
 
     // }
 
-    // const article = await Article.findOne({
-    //     where: { userId: id }
-    // })
+  
 
     const article = await Article.findByPk(id);
 
@@ -237,8 +235,8 @@ const getComments = async (id) => {
                 username: null,
                 bio: null,
                 image: null,
-                following: isFollowing,
-                followersCount: followersCount
+                following: false,
+                followersCount: 0
             }
         };
     }));
