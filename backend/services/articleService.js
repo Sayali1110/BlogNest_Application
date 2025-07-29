@@ -5,15 +5,18 @@ const Tag = require('../models/Tag');
 const Comment = require('../models/Comment');
 
 const likeArticle = async (slug, userID) => {
+    //slug-article
+    //user
 
     const article = await Article.findOne({ where: { slug } });
     console.log("article found", article);
     if (!article) return { error: 'Article not found' };
 
-    const authorId = article.id;
+    const authorId = article.userId;
     console.log("author id", authorId);
 
     const author = await User.findByPk(authorId);
+    console.log("author from favorites", author);
 
     const favoritesArray = article.favorites || [];
     console.log("initial favoritesArray", favoritesArray);
