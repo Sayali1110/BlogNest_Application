@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Article = require('../models/Article');
 const User = require('../models/User');
 const Tag = require('../models/Tag');
@@ -130,13 +131,26 @@ const deleteArticle = async (slug) => {
 }
 
 //upadte article
-const updateArticle = async (slug, articleData) => {
+const updateArticle = async (slug, articleData, user) => {
+    console.log("user get for mathcing", user);
+    const userID = user.id;
+
     console.log("slug", slug);
     const article = await Article.findOne({ where: { slug: slug } });
 
     if (!article) {
         return ({ message: "article not found" });
     }
+
+    //checking followers
+    const followersArray = user.followers;
+    const followers = followersArray.includes(article.userId);
+
+    //checking favorites
+    const favoritesArray = article.favorites || [];
+    const favorites = favoritesArray.includes(userID);
+    console.log("favorites finds", favorites);
+
 
     const generateSlug = (title) => {
         return title
@@ -160,10 +174,30 @@ const updateArticle = async (slug, articleData) => {
 
     await article.save();
     console.log("new article in service ", article);
+    console.log("user ID", article.userId);
 
-    return article;
+    const author = await User.findByPk(article.userId);
+    console.log("author from upadte service", author);
 
-
+    //return article;
+    return {
+        slug: article.slug,
+        title: article.title,
+        description: article.description,
+        body: article.body,
+        createdAt: article.createdAt,
+        updateAt: article.updateAt,
+        tagList: article.tagList,
+        author: {
+            username: author.username || null,
+            bio: author.bio || null,
+            image: author.image || null,
+            following: followers || false,
+            followersCount: author.followers.length || 0
+        },
+        favorited: favorites || false,
+        favoritesCount: article.favorites.length || 0
+    }
 }
 
 //creating comment
@@ -205,44 +239,9 @@ const createComment = async (data, slug, userID) => {
             following: fullComment.user.following.includes(userID),
             followersCount: fullComment.user.followers.length
         }
-
     };
-
-
-
-
     return { comment: formattedComment };
 }
 
-//fetch single article
-
-const getSingleArticle = async (req, res) => {
-    try {
-        const { slug } = req.params;
-
-        if (!slug || slug === "undefined") {
-            return res.status(400).json({ message: "Invalid or missing slug" });
-        }
-
-        const article = await Article.findOne({ where: { slug } });
-
-        if (!article) {
-            return res.status(404).json({ message: "Article not found" });
-        }
-
-        return res.status(200).json({ article });
-
-    } catch (error) {
-        console.error("Error fetching article", error);
-        return res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-
-
-
-
-
-
-module.exports = { createArticle, createComment, likeArticle, deleteArticle, updateArticle, getSingleArticle };
+module.exports = { createArticle, createComment, likeArticle, deleteArticle, updateArticle };
 
