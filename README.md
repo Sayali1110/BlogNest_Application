@@ -9,7 +9,7 @@ Features:
 - Like Articles : Appreciate others' content by liking their posts.
 - Follow Authors : Stay updated with your favorite writers.
 - Commenting : Engage with articles through comments.
-- CRUD for Articles : Create, edit, update, and delete your own articles.
+- CRUD for Articles : Create, update, and delete your own articles.
 - Profile Page:
   - View all your posted articles
   - See your liked articles.
