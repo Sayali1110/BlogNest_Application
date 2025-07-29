@@ -57,40 +57,38 @@ router.get('/:slug/comments', async (req, res) => {
 
         //extracting user
 
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        // const authHeader = req.headers['authorization'];
+        // const token = authHeader && authHeader.split(' ')[1];
 
-        let user = null;
+        // let user = null;
 
+        // if (token) {
+        //     try {
+        //         const decoded = jwt.verify(token, 'aligned-automation');
+        //         const userEmail = decoded.userEmail;
+        //         const user = await User.findOne({ where: { email: userEmail } });
+        //         console.log("user inside try", user);
 
-        if (token) {
-            try {
-                const decoded = jwt.verify(token, 'aligned-automation');
-                const userEmail = decoded.userEmail;
-                const user = await User.findOne({ where: { email: userEmail } });
-                console.log("user inside try", user);
+        //         if (user) {
+        //             userID = user.id;
+        //         }
 
-                if (user) {
-                    userID = user.id;
-                }
+        //         if (author) {
+        //             const articles = await getArticlesByAuthor(author, limit, offset);
+        //             return res.status(200).json(articles);
+        //         }
 
-                if (author) {
-                    const articles = await getArticlesByAuthor(author, limit, offset);
-                    return res.status(200).json(articles);
-                }
+        //         if (favorited) {
+        //             const articles = await getFavoritedArticles(favorited, limit, offset);
+        //             return res.status(200).json(articles);
+        //         }
 
-                if (favorited) {
-                    const articles = await getFavoritedArticles(favorited, limit, offset);
-                    return res.status(200).json(articles);
-                }
-
-            } catch (err) {
-                console.log('Invalid token, proceeding without user context.');
-            }
-        }
+        //     } catch (err) {
+        //         console.log('Invalid token, proceeding without user context.');
+        //     }
+        // }
 
         const slug = req.params.slug;
-        //const userEmail = req.user?.userEmail || null;
 
         const article = await Article.findOne({ where: { slug } });
         if (!article) {
@@ -103,7 +101,7 @@ router.get('/:slug/comments', async (req, res) => {
         res.status(200).json({ comments });
 
     } catch (error) {
-        console.log("Error fetching comments", error);
+        console.error("Error fetching comments", error);
         res.status(500).json({ message: "Internal Server Error", error });
     }
 });
