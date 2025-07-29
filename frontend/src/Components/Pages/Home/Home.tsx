@@ -19,6 +19,7 @@ import ArticlePage from "./ArticlePage";
 import Header from "../../Header";
 import { UserContext } from "../../../App";
 import { useLocation, useParams } from "react-router-dom";
+import { getComments } from "../../Services/getComments";
 
 type Props = {
   setUserData: (userData: any, isAuth?: boolean) => void;
@@ -73,7 +74,8 @@ const Home: React.FC<Props> = ({ setUserData }) => {
   const fetchArticles = async () => {
 
     try {
-// pages * 3 - pages * 2
+      setLoading(true);
+      // pages * 3 - pages * 2
       const offset = (page - 1) * articleOnOnePage;
       let articleResponse: ArticleResponse;
 
@@ -93,6 +95,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
 
       }
       else {
+        setLoading(true);
 
         if (selectedTab === 0 && userInfo?.isAuth) {
           articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, true);
@@ -143,14 +146,14 @@ const Home: React.FC<Props> = ({ setUserData }) => {
 
 
   useEffect(() => {
-  if (isProfilePage) {
-    setselectedTab(0); 
-  } else if (userInfo?.isAuth !== undefined) {
-    setselectedTab(userInfo.isAuth ? 0 : 1); 
-  }
-  setPage(1);
-  setSelectedTag("");
-}, [isProfilePage, userInfo?.isAuth]);
+    if (isProfilePage) {
+      setselectedTab(0);
+    } else if (userInfo?.isAuth !== undefined) {
+      setselectedTab(userInfo.isAuth ? 0 : 1);
+    }
+    setPage(1);
+    setSelectedTag("");
+  }, [isProfilePage, userInfo?.isAuth]);
 
 
   useEffect(() => {
@@ -164,10 +167,10 @@ const Home: React.FC<Props> = ({ setUserData }) => {
     <Box >
       {(loading || selectedTab === -1) ? (
         <Box
-          //  display="flex"
+          display="flex"
           justifyContent="center"
           alignItems="center"
-          minHeight="300px"
+          height="70vh"
         >
           <CircularProgress />
         </Box>
@@ -205,8 +208,8 @@ const Home: React.FC<Props> = ({ setUserData }) => {
               display="flex"
               justifyContent="center"
               alignItems="center"
-              minHeight="300px"
-              
+              height="70vh"
+
             >
               <CircularProgress />
               loading artciles
@@ -232,6 +235,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
                   justifyContent="center"
                   alignItems="center"
                   minHeight="300px"
+
                 >
                   <CircularProgress />
                   loading Tags
