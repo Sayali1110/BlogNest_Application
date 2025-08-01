@@ -1,8 +1,10 @@
 const { Op } = require('sequelize');
+
 const Article = require('../models/Article');
 const User = require('../models/User');
 const Tag = require('../models/Tag');
 const Comment = require('../models/Comment');
+const Download = require('../models/Download');
 
 const likeArticle = async (slug, userID) => {
     //slug-article
@@ -246,5 +248,25 @@ const createComment = async (data, slug, userID) => {
     return { comment: formattedComment };
 }
 
-module.exports = { createArticle, createComment, likeArticle, deleteArticle, updateArticle };
+const downloadArticle = async (slug, userEmail) => {
+
+    const article = await Article.findOne({ where: { slug } });
+    console.log("download article", article);
+
+    if (!article) {
+        console.log("article not found");
+    }
+
+    const user = await User.findOne({ where: { email: userEmail } });
+    console.log("user downloading", user);
+    console.log("user downloading", user.id);
+
+    const download = await Download.create({
+        articleId: article.id,
+        userId: user.id
+    });
+    return article;
+}
+
+module.exports = { createArticle, createComment, likeArticle, deleteArticle, updateArticle, downloadArticle };
 
