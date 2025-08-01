@@ -1,4 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+
+import generatePDF from 'react-to-pdf';
+
 import {
     AppBar,
     Avatar,
@@ -20,9 +23,14 @@ import { UserContext } from '../../App';
 import { postComment } from '../Services/postComment';
 import { postFavorite } from '../Services/postFavorite';
 import { postFollow } from '../Services/postFollow';
+import { deleteArticle } from '../Services/deleteArticle';
+import { download } from '../Services/downloadArticle'
+
 
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { deleteArticle } from '../Services/deleteArticle';
+import DownloadIcon from '@mui/icons-material/Download';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+
 
 
 type Props = {
@@ -30,6 +38,8 @@ type Props = {
 };
 
 export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
+
+    const targetRef = useRef(null);
 
     const [comments, setComments] = useState([]);
     const { slug } = useParams();
@@ -150,6 +160,16 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
         navigate('/newArticle', { state: { article } });
     };
 
+    const handleDownload = async () => {
+        try {
+            await download(article.slug);
+            generatePDF(targetRef, { filename: `${article.title}.pdf` });
+        } catch (error) {
+            console.error("Download failed", error);
+        }
+    }
+
+
     useEffect(() => {
         const fetchComments = async () => {
             try {
@@ -216,9 +236,9 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                         border: "1px solid #66bb6a",
                                     },
                                 }}
-                               
+
                                 value={followersCount}
-                                 onClick={handleToggleFollow}
+                                onClick={handleToggleFollow}
                             >
                                 {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
                             </Button>
@@ -249,14 +269,68 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                             </Button>
                         </Box>
                     )}
-                </Box>
 
+                    {username &&
+                        <div>
+                            <Button sx={{
+                                backgroundColor: "white",
+                                color: "#66bb6a",
+                                border: "1px solid #66bb6a",
+                                '&:hover': {
+                                    color: "#2e7d32",
+                                    border: "1px solid #66bb6a",
+                                },
+                            }}
+                                variant="outlined"
+                                size="small"
+                                startIcon={
+                                    <FileDownloadOutlinedIcon sx={{ fontSize: "small", color: "#66bb6a" }} />
+                                }
+                                onClick={() => {
+                                    //generatePDF(targetRef, { filename: `${article.title}.pdf` });
+                                    handleDownload();
+
+                                }}>
+
+                                Download
+                            </Button>
+                        </div>
+
+                    }
+
+                    <Box
+                        ref={targetRef}
+                        sx={{
+                            position: 'absolute',
+                            left: '-9999px',
+                            top: 0,
+                            width: '800px',
+                            backgroundColor: '#fff',
+                            color: '#000',
+                            padding: 2,
+                            lineHeight: 1.6,
+                            textAlign: 'left',
+                            paddingLeft: 4
+                        }}
+                    >
+                        <p style={{ textAlign: 'right' }}><strong>Date :</strong> {new Date(article.createdAt).toLocaleDateString()}</p>
+                        <h2 style={{ textAlign: 'center', marginBottom: 30 }}>{article.title}</h2>
+                        <hr />
+                        <p style={{ marginTop: 10 }}><strong>Author :</strong> {article.author.username}</p>
+                        <p><strong>Description :</strong> {article.description}</p>
+                        <p><strong>Content </strong></p>
+                        <p>{article.body}</p>
+                    </Box>
+                </Box>
             </Box>
 
 
             <Box sx={{ px: 4, py: 4, width: '100vw' }}>
                 <Typography variant="h6" gutterBottom textAlign={"left"}>
                     {article.description}
+                </Typography>
+                <Typography variant="h6" gutterBottom textAlign={"left"}>
+                    {article.body}
                 </Typography>
 
                 <Box mt={4} mb={4} display="flex" flexWrap="wrap">
@@ -341,6 +415,8 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                             </Button>
                         </Box>
                     )}
+
+
                 </Box>
 
 
@@ -427,3 +503,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
         </Box>
     );
 };
+function html2pdf() {
+    throw new Error('Function not implemented.');
+}
+
