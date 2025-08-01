@@ -1,4 +1,6 @@
 const express = require('express');
+const PDFDocument = require('pdfkit');
+const doc = new PDFDocument();
 const router = express.Router();
 const Article = require('../models/Article');
 const Tag = require('../models/Tag');
@@ -6,7 +8,7 @@ const User = require('../models/User');
 
 const jwt = require('jsonwebtoken');
 
-const { createArticle, createComment, likeArticle, deleteArticle, updateArticle} = require('../services/articleService');
+const { createArticle, createComment, likeArticle, deleteArticle, updateArticle, downloadArticle } = require('../services/articleService');
 
 //giving like
 router.post('/:slug/favorites', async (req, res) => {
@@ -131,8 +133,8 @@ router.put('/:slug', async (req, res) => {
 
     return res.json({
       message: "Article updated successfully",
-      article: updatedArticle ,
-    
+      article: updatedArticle,
+
     });
 
   }
@@ -141,6 +143,24 @@ router.put('/:slug', async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 
+})
+
+//downlading article
+router.post('/:slug/download', async (req, res) => {
+  try {
+    console.log("in download route");
+    const userEmail = req.user?.userEmail || null;
+    console.log("user email for new article", userEmail);
+    const slug = req.params.slug;
+    const result = await downloadArticle(slug, userEmail);
+    console.log("result", result);
+    res.status(201).json(result );
+
+  } catch (error) {
+    console.error("error while downloading", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+
+  }
 })
 
 
