@@ -9,23 +9,23 @@ const { getGlobalArticles, getComments } = require('../services/globalArticleSer
 //fething all articles
 router.get('/', async (req, res) => {
     try {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        // const authHeader = req.headers['authorization'];
+        // const token = authHeader && authHeader.split(' ')[1];
 
         let userID = null;
 
-        if (token) {
-            try {
-                const decoded = jwt.verify(token, 'aligned-automation');
-                const userEmail = decoded.userEmail;
-                const user = await User.findOne({ where: { email: userEmail } });
-                if (user) {
-                    userID = user.id;
-                }
-            } catch (err) {
-                console.log('Invalid token, proceeding without user context.');
-            }
-        }
+        // if (token) {
+        //     try {
+        //         const decoded = jwt.verify(token, 'aligned-automation');
+        //         const userEmail = decoded.userEmail;
+        //         const user = await User.findOne({ where: { email: userEmail } });
+        //         if (user) {
+        //             userID = user.id;
+        //         }
+        //     } catch (err) {
+        //         console.log('Invalid token, proceeding without user context.');
+        //     }
+        // }
 
         const tag = req.query.tag;
         const limit = req.query.limit || 3;
@@ -52,8 +52,6 @@ router.get('/', async (req, res) => {
 //fetching comment
 router.get('/:slug/comments', async (req, res) => {
     try {
-
-        console.log("in comments route");
 
         //extracting user
 
