@@ -45,7 +45,7 @@ app.use('/api/articles/feed', authentication, feedArticles);//user feed
 app.use('/api/articles', globalArticles );//get all articles, own articles, favorited articles, get comments
 
 
-app.use('/api/article', authentication, articleRoute);// post 1 article, like article, post comment , delete article, update article
+app.use('/api/article', authentication, articleRoute);// post 1 article, like article, post comment , delete article, update article, download article.
 app.use('/api/tags', tagRoute);
 
 app.use('/api/profiles',authentication, profileRoute);//follow author
