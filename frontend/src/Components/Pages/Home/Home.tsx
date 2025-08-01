@@ -28,7 +28,7 @@ type Props = {
 const Home: React.FC<Props> = ({ setUserData }) => {
   const [page, setPage] = useState(1);
   const userInfo = useContext(UserContext);
-  const [articles, setArticles] = useState<any[]>([]); // articles on one page
+  const [articles, setArticles] = useState<any[]>([]); // 3 articles on one page 
   const articleOnOnePage = 3;
   const [articleCount, setArticleCount] = useState<number>(0);
   const [tags, setTags] = useState<string[]>([]);
@@ -144,6 +144,12 @@ const Home: React.FC<Props> = ({ setUserData }) => {
     }
   }, [userInfo?.isAuth]);
 
+  useEffect(() => {
+    if (selectedTab !== -1) {
+      fetchArticles();
+    }
+  }, [selectedTab, selectedTag, page]);
+
 
   useEffect(() => {
     if (isProfilePage) {
@@ -154,13 +160,6 @@ const Home: React.FC<Props> = ({ setUserData }) => {
     setPage(1);
     setSelectedTag("");
   }, [isProfilePage, userInfo?.isAuth]);
-
-
-  useEffect(() => {
-    if (selectedTab !== -1) {
-      fetchArticles();
-    }
-  }, [selectedTab, selectedTag, page]);
 
 
   return (
