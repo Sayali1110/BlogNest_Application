@@ -59,7 +59,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                         sx={{
                             px: 2,
                             py: 1,
-                            backgroundColor: location.pathname === "/" ? "white" : "white",
+                            backgroundColor: "white",
                             color: location.pathname === "/" ? "#424242" : "#bdbdbd",
                             "&:hover": {
                                 backgroundColor: "white",
@@ -74,8 +74,8 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                         <>
                             <Button component={Link} to="/newArticle"
                                 sx={{
-                                    backgroundColor: location.pathname === "/" ? "white" : "white",
-                                    color: location.pathname === "/" ? "#bdbdbd" : "#424242",
+                                    backgroundColor: "white",
+                                   color: location.pathname === "/newArticle" ? "#424242" : "#bdbdbd",
                                     "&:hover": {
                                         backgroundColor: "white",
                                         color: "#424242",
@@ -106,8 +106,8 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                                 onClick={handleMenuOpen}
                                 sx={{
                                     gap: 0.5,
-                                    backgroundColor: location.pathname === "/" ? "white" : "white",
-                                    color: location.pathname === "/" ? "#bdbdbd" : "#424242",
+                                    backgroundColor: "white",
+                                color: location.pathname.startsWith("/profile") ? "#424242" : "#bdbdbd",
                                     "&:hover": {
                                         backgroundColor: "white",
                                         color: "#424242",
