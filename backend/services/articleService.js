@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Tag = require('../models/Tag');
 const Comment = require('../models/Comment');
 const Download = require('../models/Download');
+const sequelize = require('../db');
 
 const likeArticle = async (slug, userID) => {
     //slug-article
@@ -226,7 +227,6 @@ const createComment = async (data, slug, userID) => {
                 model: User,
                 as: 'user',
                 attributes: ['username', 'bio', 'image', 'following', 'followers'],
-
             }
         ]
     })
@@ -265,6 +265,18 @@ const downloadArticle = async (slug, userEmail) => {
         articleId: article.id,
         userId: user.id
     });
+
+    //raw query for finding count of downloaded article
+    const [result, metadata] = await sequelize.query('select * from "Downloads"');
+    console.log("raw query", result);
+    console.log("matadat", metadata);
+
+    const [count, data] = await sequelize.query(' select count(distinct ("articleId", "userId")) from  "Downloads" group by "articleId" ') ;
+    console.log("count:",count);
+
+    //raw query for finding count of articles for each tag
+   // const [] = await sequelize.query('');
+
     return article;
 }
 
