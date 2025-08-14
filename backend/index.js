@@ -34,6 +34,7 @@ const tagRoute = require('./routes/tagRoute');
 const profileRoute = require('./routes/profileRoute');
 const feedArticles = require('./routes/feedRoute');
 const globalArticles = require('./routes/globalArticleRoute');
+const dashBoard = require('./routes/dashBoardRoute');
 
 
 app.use('/api/home', homeRoute);
@@ -50,7 +51,7 @@ app.use('/api/tags', tagRoute);
 
 app.use('/api/profiles',authentication, profileRoute);//follow author
 
-
+app.use('/api/dashboard', dashBoard);
 
 
 app.listen(5000, function () {
