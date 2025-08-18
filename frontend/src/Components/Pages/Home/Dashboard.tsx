@@ -12,7 +12,7 @@ const Dashboard: React.FC = () => {
 
                 <Stack direction="row" spacing={3}>
 
-                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3 , height: 450}}>
+                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3 , height: 500}}>
                         <CardContent>
                             <Typography
                                 variant="h6"
@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
                         </CardContent>
                     </Card>
 
-                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3 , height: 450}}>
+                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3 , height: 500}}>
                         <CardContent>
                             <Typography
                                 variant="h6"
