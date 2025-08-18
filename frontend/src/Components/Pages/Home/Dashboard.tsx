@@ -1,26 +1,47 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Card, CardContent, Typography, Divider } from "@mui/material";
 import DownloadChart from "../../Dashboard/DownloadChart";
 import TagChart from "../../Dashboard/TagChart";
 import DownloadActivityHistory from "../../Dashboard/DownloadActivityHistory";
 
 const Dashboard: React.FC = () => {
     return (
-<Box >
-      <Stack direction="column" spacing={3}>
+        <Box sx={{ backgroundColor: "#E8F5E8", minHeight: "100vh", p: 3 }}>
+            <Stack direction="column" spacing={3}>
 
+                <TagChart />
 
-            <TagChart />
+                <Stack direction="row" spacing={3}>
 
-            <Stack direction="row" spacing={3}>
-                <DownloadChart />
-                <DownloadActivityHistory />
+                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3 }}>
+                        <CardContent>
+                            <Typography
+                                variant="h6"
+                                sx={{ color: "#689F38", fontWeight: 550, mb: 1.5 }}
+                            >
+                                Download Overview
+                            </Typography>
+                            <Divider />
+
+                            <DownloadChart />
+                        </CardContent>
+                    </Card>
+
+                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3 }}>
+                        <CardContent>
+                           <Typography
+                                variant="h6"
+                                sx={{ color: "#689F38", fontWeight: 550, mb: 1.5 }}
+                            >
+                                Download Activity
+                            </Typography>
+                            <Divider />
+                            <DownloadActivityHistory />
+                        </CardContent>
+                    </Card>
+                </Stack>
+
             </Stack>
-
-        </Stack>
-
-</Box>
-      
-
+        </Box>
     );
 };
 
