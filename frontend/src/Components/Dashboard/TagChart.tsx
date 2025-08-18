@@ -14,7 +14,8 @@ import {
     CardContent,
     Typography,
     List,
-    ListItem
+    ListItem,
+    Divider
 } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
@@ -86,8 +87,8 @@ const TagChart: React.FC = () => {
             try {
                 const datafromBackend = await tagInfo();
                 setTagList(datafromBackend);
-                const labels = datafromBackend.map((item:any) => item.name);
-                const values = datafromBackend.map((item:any) => item.article_count);
+                const labels = datafromBackend.map((item: any) => item.name);
+                const values = datafromBackend.map((item: any) => item.article_count);
                 setChartData({
                     labels,
                     datasets: [
@@ -110,51 +111,43 @@ const TagChart: React.FC = () => {
         <Box p={3} display="flex" justifyContent="center" >
             <Grid
                 container
-                spacing={6}
+                spacing={3}
                 sx={{ maxWidth: "1500px" }}
+                justifyContent="center"
             >
 
                 <Grid >
                     <Card
                         sx={{
-                            width: "500px",
-                            background: "linear-gradient(135deg, #fdfbfb, #ebedee)",
-                            borderRadius: "20px",
+                            width: "1100px",
+                            borderRadius: 4,
                             boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-                         
-
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
                         }}
                     >
-                        <CardContent>
-                            <Typography variant="h6" fontWeight={600} gutterBottom>
-                                Tag Distribution
-                            </Typography>
+
+
+                        <Typography variant="h6" fontWeight={600} color={"#689F38"} marginBottom={2} marginTop={2} >
+                            Popular Tags
+                            <Divider />
+                        </Typography>
+
+
+                        <Box display="flex" justifyContent="center" alignItems="flex-start" gap={17} marginBottom={2}>
+
                             {chartData ? (
-                                <Pie data={chartData} options={options} ref={chartRef} />
+                                <Box display="flex" justifyContent="center" alignItems="center">
+                                    <Box sx={{ width: 400, height: 400 }}>
+                                        <Pie data={chartData} options={options} ref={chartRef} />
+                                    </Box>
+                                </Box>
                             ) : (
                                 <Typography>Loading chart...</Typography>
                             )}
-                        </CardContent>
-                    </Card>
-                </Grid>
 
 
-                <Grid>
-                    <Card
-                        sx={{
-                            height: "100%",
-                            width: "200%",
-                            background: "linear-gradient(135deg, #fdfbfb, #ebedee)",
-                            borderRadius: "20px",
-                            boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-                        
-
-                        }}
-                    >
-                        <CardContent>
-                            <Typography variant="h6" fontWeight={600} gutterBottom>
-                                Popular Tags
-                            </Typography>
                             <List>
                                 {tagList.map((tag, index) => (
                                     <ListItem
@@ -182,9 +175,12 @@ const TagChart: React.FC = () => {
                                     </ListItem>
                                 ))}
                             </List>
-                        </CardContent>
+                        </Box>
+
                     </Card>
                 </Grid>
+
+
             </Grid>
         </Box>
     );
