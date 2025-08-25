@@ -36,13 +36,7 @@ const DownloadActivityHistory = () => {
 
  return (
     <Box sx={{ maxWidth: 700, width: "100%" }}>
-      {/* <Typography
-        variant="h6"
-        sx={{ color: "#689F38", fontWeight: 550, mb: 1.5 }}
-      >
-        Download Activity
-      </Typography>
-      <Divider /> */}
+
 
       {history && history.length > 0 ? (
         <Box
