@@ -10,6 +10,7 @@ import { NewArticlePage } from './Components/Pages/NewArticlePage'
 import { ReadMorePage } from './Components/Pages/ReadMorePage'
 import { Download } from '@mui/icons-material'
 import TagChart from './Components/Dashboard/TagChart'
+import { ProfileSettings } from './Components/Pages/ProfileSettings'
 
 
 export const UserContext = createContext<any>(null);
@@ -60,6 +61,7 @@ function App() {
             <Route path="/article/:slug" element={<ReadMorePage setUserData={setUserData} />} />
             <Route path="/profile/:username" element={<Home setUserData={setUserData} />} />
             <Route path="/dashboard" element={<TagChart/>} />
+            <Route path="/settings" element={<ProfileSettings/>}/>
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
