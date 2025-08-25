@@ -35,6 +35,7 @@ const profileRoute = require('./routes/profileRoute');
 const feedArticles = require('./routes/feedRoute');
 const globalArticles = require('./routes/globalArticleRoute');
 const dashBoard = require('./routes/dashBoardRoute');
+const userRoute = require('./routes/userRoute');
 
 
 app.use('/api/home', homeRoute);
@@ -53,6 +54,7 @@ app.use('/api/profiles',authentication, profileRoute);//follow author
 
 app.use('/api/dashboard', dashBoard);
 
+app.use('/api/user',authentication, userRoute);//get user
 
 app.listen(5000, function () {
   console.log("server is running on port no. 5000");
