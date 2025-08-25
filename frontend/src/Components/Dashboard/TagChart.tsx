@@ -108,81 +108,63 @@ const TagChart: React.FC = () => {
     }, []);
 
     return (
-        <Box p={3} display="flex" justifyContent="center" >
-            <Grid
-                container
-                spacing={3}
-                sx={{ maxWidth: "1500px" }}
-                justifyContent="center"
-            >
 
-                <Grid >
-                    <Card
-                        sx={{
-                            width: "1100px",
-                            borderRadius: 4,
-                            boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                        }}
-                    >
+        <Box width={800}>
+            <Box>
+
+                <Typography variant="h6" fontWeight={600} color={"#689F38"} marginBottom={2} marginTop={2} >
+                    Popular Tags
+                    <Divider />
+                </Typography>
 
 
-                        <Typography variant="h6" fontWeight={600} color={"#689F38"} marginBottom={2} marginTop={2} >
-                            Popular Tags
-                            <Divider />
-                        </Typography>
+                <Box display="flex" justifyContent="center" alignItems="flex-start" gap={17} marginBottom={2}>
 
-
-                        <Box display="flex" justifyContent="center" alignItems="flex-start" gap={17} marginBottom={2}>
-
-                            {chartData ? (
-                                <Box display="flex" justifyContent="center" alignItems="center">
-                                    <Box sx={{ width: 400, height: 400 }}>
-                                        <Pie data={chartData} options={options} ref={chartRef} />
-                                    </Box>
-                                </Box>
-                            ) : (
-                                <Typography>Loading chart...</Typography>
-                            )}
-
-
-                            <List>
-                                {tagList.map((tag, index) => (
-                                    <ListItem
-                                        key={tag.name}
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: 1,
-                                            py: 0.5,
-                                            borderBottom: "1px solid rgba(0,0,0,0.05)",
-                                        }}
-                                    >
-                                        <AssignmentIcon
-                                            sx={{
-                                                fontSize: 26,
-                                                color: colors[index % colors.length],
-                                            }}
-                                        />
-                                        <Typography sx={{ flexGrow: 1, fontSize: "14px" }}>
-                                            {tag.name}
-                                        </Typography>
-                                        <Typography sx={{ fontWeight: 600, fontSize: "13px" }}>
-                                            {tag.article_count}
-                                        </Typography>
-                                    </ListItem>
-                                ))}
-                            </List>
+                    {chartData ? (
+                        <Box display="flex" justifyContent="center" alignItems="center">
+                            <Box sx={{ width: 400, height: 400 }}>
+                                <Pie data={chartData} options={options} ref={chartRef} />
+                            </Box>
                         </Box>
+                    ) : (
+                        <Typography>Loading chart...</Typography>
+                    )}
 
-                    </Card>
-                </Grid>
+
+                    <List>
+                        {tagList.map((tag, index) => (
+                            <ListItem
+                                key={tag.name}
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                    py: 0.5,
+                                    borderBottom: "1px solid rgba(0,0,0,0.05)",
+                                }}
+                            >
+                                <AssignmentIcon
+                                    sx={{
+                                        fontSize: 26,
+                                        color: colors[index % colors.length],
+                                    }}
+                                />
+                                <Typography sx={{ flexGrow: 1, fontSize: "14px" }}>
+                                    {tag.name}
+                                </Typography>
+                                <Typography sx={{ fontWeight: 600, fontSize: "13px" }}>
+                                    {tag.article_count}
+                                </Typography>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
 
 
-            </Grid>
+            </Box>
         </Box>
+
+
     );
 
 };
