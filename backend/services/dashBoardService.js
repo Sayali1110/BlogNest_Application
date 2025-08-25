@@ -9,7 +9,7 @@ const sequelize = require('../db');
 
 const fetchDownloadData = async () => {
 
-    const [result, metadata] = await sequelize.query(`select "name", cardinality("articleIdList") as article_count from  "Tags" `);
+    const [result, metadata] = await sequelize.query(`select "name", cardinality("articleIdList") as article_count from  "Tags" ORDER By article_count DESC`);
     console.log("result", result);
 
     const data = await sequelize.query(` select "title", cardinality("favorites") as "likesCount" from "Articles" `);
@@ -49,4 +49,15 @@ const downloadActivity = async () => {
     return downloadActivityData;
 }
 
-module.exports = { fetchDownloadData, fetchData, downloadActivity };
+const totalLikes = async () => {
+    const [data, result] = await sequelize.query(`
+        SELECT "title",cardinality("favorites") as likes
+        FROM "Articles"
+        ORDER BY "likes" DESC nulls last
+        `);
+
+    return data;
+
+}
+
+module.exports = { fetchDownloadData, fetchData, downloadActivity, totalLikes};
