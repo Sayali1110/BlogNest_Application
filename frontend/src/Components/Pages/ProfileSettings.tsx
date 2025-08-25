@@ -9,7 +9,15 @@ export const ProfileSettings = () => {
         email: "",
         bio: "",
         profilePictureUrl: "",
+
     });
+
+    const [usernameError, setUsernameError] = useState("");
+    const [currentPasswordError, setCurrentPasswordError] = useState("");
+    const [newPasswordError, setNewPasswordError] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
+    const [backendError, setBackendError] = useState("");//backend
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -37,14 +45,61 @@ export const ProfileSettings = () => {
             alert("Profile updated successfully");
             console.log("Updated user:", data);
 
+            setCurrentPasswordError("");
+            setNewPasswordError("");
+            setConfirmPasswordError("");
+
             setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert("Update failed");
+
+            if (err?.response?.data?.error) {
+                const errorMessage = err.response.data.error;
+
+                if (errorMessage.toLowerCase().includes("current password")) {
+                    setCurrentPasswordError(errorMessage);
+                } else {
+                    setBackendError(errorMessage);
+                }
+            } else {
+                setBackendError("Update failed. Please try again.");
+            }
         }
+
+
+
+
     };
+
+    const validate = () => {
+
+        let isValid = true;
+
+        if (profileData.username.length < 6) {
+            setUsernameError("Username must be 6 characters");
+            isValid = false;
+        }
+        else {
+            setUsernameError("");
+        }
+
+        if (newPassword.length < 5) {
+            setNewPasswordError("Username must be 5 characters");
+        }
+        else {
+            setNewPasswordError("");
+        }
+
+        if (newPassword && confirmPassword && newPassword != confirmPassword) {
+            setConfirmPasswordError("password must match with new password");
+        }
+        else {
+            setConfirmPasswordError("");
+        }
+        return isValid;
+    }
 
 
     useEffect(() => {
@@ -109,6 +164,8 @@ export const ProfileSettings = () => {
                     name="username"
                     value={profileData.username}
                     onChange={handleChange}
+                    helperText={usernameError}
+                    error={!!usernameError}
                 />
 
                 <TextField
@@ -142,6 +199,8 @@ export const ProfileSettings = () => {
                     fullWidth
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
+                    error={!!currentPasswordError}
+                    helperText={currentPasswordError}
                 />
 
                 <TextField
@@ -158,6 +217,8 @@ export const ProfileSettings = () => {
                     fullWidth
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    error={!!confirmPasswordError}
+                    helperText={confirmPasswordError}
                 />
 
                 <Button
@@ -172,7 +233,13 @@ export const ProfileSettings = () => {
                             backgroundColor: "#aed581",
                         },
                     }}
-                    onClick={handleUpdate}
+
+                    onClick={() => {
+                        if (validate()) {
+                            handleUpdate();
+                        }
+                    }}
+
                 >
                     Save Changes
                 </Button>
