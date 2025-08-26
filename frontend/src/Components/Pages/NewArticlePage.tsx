@@ -49,7 +49,7 @@ export const NewArticlePage = () => {
       .split(",")
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
-      
+
 
     if (!existingArticle) {
       try {
