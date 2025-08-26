@@ -34,7 +34,7 @@ const DownloadActivityHistory = () => {
     return `${differenceInDays} days ago`;
   };
 
- return (
+  return (
     <Box sx={{ maxWidth: 700, width: "100%" }}>
 
 
@@ -43,6 +43,16 @@ const DownloadActivityHistory = () => {
           sx={{
             maxHeight: 450,
             overflowY: "auto",
+            "&::-webkit-scrollbar": {
+              width: "6px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#b0bec5",
+              borderRadius: "8px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#78909c",
+            },
             pr: 1,
           }}
         >
