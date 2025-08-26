@@ -20,6 +20,7 @@ import Header from "../../Header";
 import { UserContext } from "../../../App";
 import { useLocation, useParams } from "react-router-dom";
 import { getComments } from "../../Services/getComments";
+import Dashboard from "./Dashboard";
 
 type Props = {
   setUserData: (userData: any, isAuth?: boolean) => void;
@@ -50,7 +51,7 @@ const Home: React.FC<Props> = ({ setUserData }) => {
   };
   const handleTags = (value: string) => {
     setSelectedTag(value);
-    setselectedTab(2)
+    setselectedTab(3)
   };
 
   const handleReset = () => {
@@ -97,13 +98,13 @@ const Home: React.FC<Props> = ({ setUserData }) => {
       else {
         setLoading(true);
 
-        if (selectedTab === 0 && userInfo?.isAuth) {
+        if (selectedTab === 1 && userInfo?.isAuth) {
           articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, true);
         }
-        else if (selectedTab === 1) {
+        else if (selectedTab === 2) {
           articleResponse = await getArticles(offset, articleOnOnePage, "", userInfo?.user?.token, false);
         }
-        else if (selectedTab === 2 && selectedTag) {
+        else if (selectedTab === 3 && selectedTag) {
           articleResponse = await getArticles(offset, articleOnOnePage, selectedTag, userInfo?.user?.token, false);
         }
         else {
@@ -161,88 +162,99 @@ const Home: React.FC<Props> = ({ setUserData }) => {
     setSelectedTag("");
   }, [isProfilePage, userInfo?.isAuth]);
 
-
   return (
-    <Box >
+    <Box>
       {(loading || selectedTab === -1) ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="70vh"
-        >
+        <Box display="flex" justifyContent="center" alignItems="center" height="70vh">
           <CircularProgress />
         </Box>
       ) : (
         <>
-          {isProfilePage ? (<Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            py={4}
-            sx={{ backgroundColor: "#e0e0e0" }}
-          >
-            <Avatar sx={{ width: 80, height: 80 }} />
-            <Typography variant="h5" mt={2}>
-              {userInfo?.user?.user?.username}
-            </Typography>
+          {isProfilePage ? (
+            <Box display="flex" flexDirection="column" alignItems="center" py={4} sx={{ backgroundColor: "#e0e0e0" }}>
+              <Avatar sx={{ width: 80, height: 80 }} />
+              <Typography variant="h5" mt={2}>
+                {userInfo?.user?.user?.username}
+              </Typography>
+            </Box>
+          ) : (
+            <Header />
+          )}
 
-          </Box>) : (<Header />)}
-
-          {isProfilePage && <Tabs value={selectedTab} onChange={changeTab}>
-            <Tab label="My Articles" sx={{ color: "#8bc34a" }} value={0} />
-            <Tab label="Favorited Articles" sx={{ color: "#8bc34a" }} value={1} />
-          </Tabs>}
-
-          {!isProfilePage && <Tabs value={selectedTab} onChange={changeTab} >
-            {userInfo?.isAuth && <Tab label="Your Feed" sx={{ color: "#8bc34a" }} value={0} />}
-            <Tab label="Global Feed" sx={{ color: "#8bc34a" }} value={1} />
-            {selectedTag && <Tab label={selectedTag} sx={{ color: "#8bc34a" }} value={2} />}
-          </Tabs>}
-
+          {/* Tabs */}
+          {isProfilePage ? (
+            <Tabs value={selectedTab} onChange={changeTab} textColor="inherit"
+              TabIndicatorProps={{
+                style: { backgroundColor: "#8bc34a" },
+              }}>
+              <Tab label="My Articles" sx={{ color: "#8bc34a" }} value={0} />
+              <Tab label="Favorited Articles" sx={{ color: "#8bc34a" }} value={1} />
+            </Tabs>
+          ) : (
+            <Tabs value={selectedTab} onChange={changeTab} textColor="inherit"
+              TabIndicatorProps={{
+                style: { backgroundColor: "#8bc34a" },
+              }}>
+              <Tab label="Dashboard" sx={{ color: "#8bc34a" }} value={0} />
+              {userInfo?.isAuth && <Tab label="Your Feed" sx={{ color: "#8bc34a" }} value={1} />}
+              <Tab label="Global Feed" sx={{ color: "#8bc34a" }} value={2} />
+              {selectedTag && <Tab label={selectedTag} sx={{ color: "#8bc34a" }} value={3} />}
+            </Tabs>
+          )}
 
           <Box width="100%" display="flex" justifyContent="space-between" gap={2}>
+            <Box flex={3}>
+              {isProfilePage ? (
+                <>
+                  {selectedTab === 0 && <ArticlePage articles={articles} />}
+                  {selectedTab === 1 && <ArticlePage articles={articles} />}
+                </>
+              ) : (
+                <>
+                  {selectedTab === 0 && <Dashboard />}
+                  {loading ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" height="70vh">
+                      <CircularProgress />
+                      loading articles
+                    </Box>
+                  ) : (
+                    <>
+                      {selectedTab === 1 && <ArticlePage articles={articles} />}
+                      {selectedTab === 2 && <ArticlePage articles={articles} />}
+                      {selectedTab === 3 && <ArticlePage articles={articles} />}
+                      {articles.length > 0 && selectedTab !== 0 ? (
+                        <Box>
+                          <Stack spacing={2}>
+                            <Pagination
+                              count={Math.ceil(articleCount / articleOnOnePage)}
+                              onChange={handlePages}
+                              page={page}
+                            />
+                          </Stack>
+                        </Box>
+                      ) : (
+                        selectedTab !== 0 && (
+                          <Typography align="left" padding={2} marginLeft={-2}>
+                            Articles not available
+                          </Typography>
+                        )
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </Box>
 
-            {loading ? (<Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="70vh"
-
-            >
-              <CircularProgress />
-              loading artciles
-
-            </Box>) : (<Box flex={3}>
-              <ArticlePage articles={articles} />
-
-              {articles.length > 0 ? (<Box>
-                <Stack spacing={2}>
-                  <Pagination
-                    count={Math.ceil(articleCount / articleOnOnePage)}
-                    onChange={handlePages}
-                    page={page}
-                  />
-                </Stack>
-              </Box>) : (<Typography align="left" padding={2} marginLeft={-2}>Articles not available</Typography>)}
-
-            </Box>)}
-            {!isProfilePage && (
+            {!isProfilePage && selectedTab !== 0 && (
               loading ? (
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  minHeight="300px"
-
-                >
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
                   <CircularProgress />
                   loading Tags
                 </Box>
               ) : (
                 <Box
                   sx={{
-                    backgroundColor: '#e0e0e0',
+                    backgroundColor: "#e0e0e0",
                     width: "25%",
                     borderRadius: "8px"
                   }}

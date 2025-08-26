@@ -140,7 +140,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                                 }}
                             >
                                 <MenuItem onClick={() => { handleMenuClose(); navigate(`/profile/${userInfo?.user?.user?.username}`) }}>Profile</MenuItem>
-                                <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+                                <MenuItem onClick={ () => {handleMenuClose(); navigate(`/settings`)}}>Settings</MenuItem>
                                 <MenuItem onClick={() => { handleMenuClose(); Logout(); }}>
                                     Logout
                                 </MenuItem>
