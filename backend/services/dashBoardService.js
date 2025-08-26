@@ -51,13 +51,14 @@ const downloadActivity = async () => {
 
 const totalLikes = async () => {
     const [data, result] = await sequelize.query(`
-        SELECT "title",cardinality("favorites") as likes
+        SELECT "title",
+               COALESCE(cardinality("favorites"), 0) as likes
         FROM "Articles"
-        ORDER BY "likes" DESC nulls last
-        `);
+        ORDER BY "likes" DESC
+    `);
 
     return data;
-
 }
+
 
 module.exports = { fetchDownloadData, fetchData, downloadActivity, totalLikes};
