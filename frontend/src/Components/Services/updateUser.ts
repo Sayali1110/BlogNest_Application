@@ -3,7 +3,7 @@ import { Main_URL } from "../constants";
 
 export const updateUser = async (profileData: any) => {
     try {
-        console.log("profiledata", profileData);
+        console.log("user data before updataion", profileData);
         const token = localStorage.getItem("token");
         console.log("update profile token", token);
         const response = await axios.put(`${Main_URL}/user/update`, profileData, {
@@ -12,7 +12,7 @@ export const updateUser = async (profileData: any) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log("resposnse from service f", response);
+        console.log("user data after updation", response.data);
 
         return response.data;
     } catch (error: any) {
