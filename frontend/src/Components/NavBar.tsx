@@ -12,7 +12,10 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
     const location = useLocation();
 
     const isProfilePage = location.pathname.startsWith("/profile");
+
     const userInfo = useContext(UserContext);
+    console.log("user Is from context", userInfo)
+
     const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -26,7 +29,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
         setAnchorEl(null);
     };
 
-    console.log("user Is from context", userInfo)
+
 
     const Logout = () => {
         localStorage.removeItem("loggedUser");
@@ -75,7 +78,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                             <Button component={Link} to="/newArticle"
                                 sx={{
                                     backgroundColor: "white",
-                                   color: location.pathname === "/newArticle" ? "#424242" : "#bdbdbd",
+                                    color: location.pathname === "/newArticle" ? "#424242" : "#bdbdbd",
                                     "&:hover": {
                                         backgroundColor: "white",
                                         color: "#424242",
@@ -107,7 +110,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                                 sx={{
                                     gap: 0.5,
                                     backgroundColor: "white",
-                                color: location.pathname.startsWith("/profile") ? "#424242" : "#bdbdbd",
+                                    color: location.pathname.startsWith("/profile") ? "#424242" : "#bdbdbd",
                                     "&:hover": {
                                         backgroundColor: "white",
                                         color: "#424242",
@@ -125,9 +128,9 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                                         fontSize: "0.9rem",
                                         backgroundColor: '#bdbdbd'
                                     }}>
-                                        {userInfo?.user?.user?.username[0]}
+                                        {userInfo?.user?.user?.username[0] || userInfo?.user?.username[0]}
                                     </Avatar>)}
-                                <Typography>  {userInfo?.user?.user?.username}</Typography>
+                                <Typography>  {userInfo?.user?.user?.username || userInfo?.user?.username }</Typography>
                                 <Typography fontSize="large"> ▼</Typography>
                             </Button>
 
@@ -140,7 +143,7 @@ const NavBar: React.FC<Props> = ({ setUserData }) => {
                                 }}
                             >
                                 <MenuItem onClick={() => { handleMenuClose(); navigate(`/profile/${userInfo?.user?.user?.username}`) }}>Profile</MenuItem>
-                                <MenuItem onClick={ () => {handleMenuClose(); navigate(`/settings`)}}>Settings</MenuItem>
+                                <MenuItem onClick={() => { handleMenuClose(); navigate(`/settings`) }}>Settings</MenuItem>
                                 <MenuItem onClick={() => { handleMenuClose(); Logout(); }}>
                                     Logout
                                 </MenuItem>
