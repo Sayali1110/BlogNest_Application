@@ -32,10 +32,10 @@ const DownloadChart = () => {
 
   const options = {
     plugins: {
-      title: {
-        display: true,
-        text: "Downloaded Articles"
-      },
+      // title: {
+      //   display: true,
+      //   text: "Downloaded Articles"
+      // },
       legend: {
         position: "top" as const,
         labels: {
@@ -125,7 +125,7 @@ const DownloadChart = () => {
       gap={3}  
       p={3}     
     >
-      <Box sx={{ height: 400, width: "75%", borderRadius: 4 }}>
+      <Box sx={{ height: 250, width: "100%", borderRadius: 4 }}>
         {chartData ? (
           <Box sx={{ height: "100%", width: "100%" }}>
             <Bar ref={chartRef} data={chartData} options={options}  />
