@@ -36,8 +36,6 @@ const DownloadActivityHistory = () => {
 
   return (
     <Box sx={{ maxWidth: 700, width: "100%" }}>
-
-
       {history && history.length > 0 ? (
         <Box
           sx={{
@@ -47,47 +45,69 @@ const DownloadActivityHistory = () => {
               width: "6px",
             },
             "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#b0bec5",
+              backgroundColor: "#cfd8dc",
               borderRadius: "8px",
             },
             "&::-webkit-scrollbar-thumb:hover": {
-              backgroundColor: "#78909c",
+              backgroundColor: "#90a4ae",
             },
             pr: 1,
           }}
         >
           {history.map((item: any, index: number) => (
-            <Box key={index}>
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                py={1.5}
+            <Card
+              key={index}
+              sx={{
+                mb: 1.5,
+                borderRadius: 2,
+                boxShadow: "0px 2px 6px rgba(0,0,0,0.08)",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  boxShadow: "0px 4px 12px rgba(0,0,0,0.12)",
+                  transform: "translateY(-2px)",
+                },
+              }}
+            >
+              <CardContent
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  py: 1.5,
+                  px: 2,
+                }}
               >
                 <Box display="flex" alignItems="center" gap={2} flex={1}>
-                  <Avatar sx={{ width: 40, height: 40 }} />
-                  <Typography variant="body1">
+                  <Avatar sx={{ width: 34, height: 34 }} src={item.image}>
+                    {!item.image && item.username?.charAt(0)}
+                  </Avatar>
+                  <Typography variant="body2" fontSize="15px">
                     <strong>{item.username}</strong> downloaded{" "}
-                    <span style={{ color: "blue", fontWeight: 500 }}>
-                      {item.title} Article
+                    <span
+                      style={{
+                        color: "#1976d2",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {item.title}
                     </span>{" "}
+                    Article
                   </Typography>
                 </Box>
 
                 <Typography
                   variant="caption"
-                  sx={{ color: "gray", whiteSpace: "nowrap", pl: 2 }}
+                  sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
                 >
                   {calculateDaysAgo(item.createdAt)}
                 </Typography>
-              </Box>
-
+              </CardContent>
               {index < history.length - 1 && <Divider />}
-            </Box>
+            </Card>
           ))}
         </Box>
       ) : (
-        <Typography paddingTop={2} color="gray">
+        <Typography paddingTop={2} color="gray" textAlign="center">
           No download activity found.
         </Typography>
       )}
