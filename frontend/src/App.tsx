@@ -60,17 +60,16 @@ function App() {
             <Route path='/newArticle' element={<NewArticlePage />} />
             <Route path="/article/:slug" element={<ReadMorePage setUserData={setUserData} />} />
             <Route path="/profile/:username" element={<Home setUserData={setUserData} />} />
-            <Route path="/dashboard" element={<TagChart/>} />
-            <Route path="/settings" element={<ProfileSettings/>}/>
+            <Route path="/dashboard" element={<TagChart />} />
+            <Route path="/settings" element={<ProfileSettings setUserData={setUserData} />} />
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
-      
+
     </>
   )
 }
 
 export default App
-
 
 
