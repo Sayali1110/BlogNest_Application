@@ -8,7 +8,7 @@ const User = require('../models/User');
 
 const jwt = require('jsonwebtoken');
 
-const { createArticle, createComment, likeArticle, deleteArticle, updateArticle, downloadArticle } = require('../services/articleService');
+const { createArticle, createComment, likeArticle, deleteArticle, updateArticle, downloadArticle, getArticle } = require('../services/articleService');
 
 //giving like
 router.post('/:slug/favorites', async (req, res) => {
@@ -153,6 +153,24 @@ router.post('/:slug/download', async (req, res) => {
     console.log("user email for new article", userEmail);
     const slug = req.params.slug;
     const result = await downloadArticle(slug, userEmail);
+    console.log("result", result);
+    res.status(201).json(result );
+
+  } catch (error) {
+    console.error("error while downloading", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+
+  }
+})
+
+
+//get Single Article
+router.get('/:slug', async (req, res) => {
+  try {
+    const userEmail = req.user?.userEmail || null;
+    console.log("user email for new article", userEmail);
+    const slug = req.params.slug;
+    const result = await getArticle(slug, userEmail);
     console.log("result", result);
     res.status(201).json(result );
 

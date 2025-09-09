@@ -271,14 +271,74 @@ const downloadArticle = async (slug, userEmail) => {
     console.log("raw query", result);
     console.log("matadat", metadata);
 
-    const [count, data] = await sequelize.query(' select count(distinct ("articleId", "userId")) from  "Downloads" group by "articleId" ') ;
-    console.log("count:",count);
+    const [count, data] = await sequelize.query(' select count(distinct ("articleId", "userId")) from  "Downloads" group by "articleId" ');
+    console.log("count:", count);
 
     //raw query for finding count of articles for each tag
-   // const [] = await sequelize.query('');
+    // const [] = await sequelize.query('');
 
     return article;
 }
 
-module.exports = { createArticle, createComment, likeArticle, deleteArticle, updateArticle, downloadArticle };
+
+// const getArticle = async (slug, userEmail) => {
+
+//     const article = await Article.findOne({ where: { slug } });
+//     console.log("download article", article);
+
+//     if (!article) {
+//         console.log("article not found");
+//     }
+
+//     const author = await User.findByPk(article.userId);
+//     console.log("author from upadte service", author);
+
+//     return article;
+// }
+
+const getArticle = async (slug, userEmail) => {
+  try {
+    const article = await Article.findOne({
+      where: { slug },
+      include: [
+        {
+          model: User,
+          as: 'author',
+          attributes: ['id', 'username', 'email', 'image'], 
+        },
+        {
+          model: Tag,
+          as: 'tags',
+          attributes: ['id', 'name'],
+          through: { attributes: [] }, 
+        },
+        {
+          model: Comment,
+          as: 'Comments',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'username', 'email'],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!article) {
+      console.log("Article not found");
+      return null;
+    }
+
+    console.log("Fetched article with author", article.toJSON());
+    return article;
+  } catch (error) {
+    console.error("Error fetching article:", error);
+    throw error;
+  }
+};
+
+
+module.exports = { createArticle, createComment, likeArticle, deleteArticle, updateArticle, downloadArticle, getArticle };
 

@@ -38,7 +38,7 @@ const fetchData = async () => {
 const downloadActivity = async () => {
 
     const [downloadActivityData, metadata] = await sequelize.query(`
-    SELECT d.id, d."createdAt", u."username", a."title", a."description"
+    SELECT d.id, d."createdAt", u."username", a."title", a."description",u."image"
     FROM "Downloads" d
     JOIN "Users" u
     ON d."userId" = u."id"
@@ -49,16 +49,31 @@ const downloadActivity = async () => {
     return downloadActivityData;
 }
 
-const totalLikes = async () => {
-    const [data, result] = await sequelize.query(`
-        SELECT "title",
-               COALESCE(cardinality("favorites"), 0) as likes
-        FROM "Articles"
-        ORDER BY "likes" DESC
-    `);
+// const totalLikes = async () => {
+//     const [data, result] = await sequelize.query(`
+//         SELECT a."title", a."description", a."body", u."username", u."image", u."bio", u."follwers", u."following"
+//                COALESCE(cardinality(a."favorites"), 0) as likes
+//         FROM "Articles" a
+//           JOIN "Users" u
+//             ON a."userId" = u."id"
+//         ORDER BY "likes" DESC
+//     `);
 
-    return data;
+//     return data;
+// }
+
+const totalLikes = async () => {
+  const [data, result] = await sequelize.query(`
+    SELECT "title",
+           COALESCE(cardinality("favorites"), 0) as likes
+    FROM "Articles"
+    WHERE cardinality("favorites") > 0
+    ORDER BY "likes" DESC
+  `);
+
+  return data;
 }
 
 
-module.exports = { fetchDownloadData, fetchData, downloadActivity, totalLikes};
+
+module.exports = { fetchDownloadData, fetchData, downloadActivity, totalLikes };
