@@ -18,6 +18,7 @@ import {
     Divider
 } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import TagIcon from "@mui/icons-material/LocalOffer";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -70,8 +71,10 @@ const TagChart: React.FC = () => {
                     chart.setActiveElements([]);
                     chart.update();
                 },
-            },
+            }, 
         },
+        
+        
         elements: {
             arc: {
                 borderWidth: 2,
@@ -109,10 +112,10 @@ const TagChart: React.FC = () => {
 
     return (
 
-        <Box width={800}>
-            <Box>
+        <Box sx={{ width:800}}>
+            <Box >
 
-                <Typography variant="h6" fontWeight={600} color={"#689F38"} marginBottom={2} marginTop={2} >
+                <Typography variant="h6" fontWeight={600} color={"#689F38"} marginBottom={2} marginTop={2}  fontSize={18} >
                     Popular Tags
                     <Divider />
                 </Typography>
@@ -122,16 +125,26 @@ const TagChart: React.FC = () => {
 
                     {chartData ? (
                         <Box display="flex" justifyContent="center" alignItems="center">
-                            <Box sx={{ width: 400, height: 400 }}>
+                            <Box sx={{ width: 300, height: 300 }}>
                                 <Pie data={chartData} options={options} ref={chartRef} />
                             </Box>
                         </Box>
                     ) : (
                         <Typography>Loading chart...</Typography>
                     )}
+                    <List
+                        sx={{
+                            maxHeight: 300,
+                            overflowY: "auto",
+                            "&::-webkit-scrollbar": {
+                                width: "6px",
+                            },
 
-
-                    <List>
+                            "&::-webkit-scrollbar-thumb:hover": {
+                                backgroundColor: "#78909c",
+                            },
+                        }}
+                    >
                         {tagList.map((tag, index) => (
                             <ListItem
                                 key={tag.name}
@@ -143,12 +156,12 @@ const TagChart: React.FC = () => {
                                     borderBottom: "1px solid rgba(0,0,0,0.05)",
                                 }}
                             >
-                                <AssignmentIcon
-                                    sx={{
-                                        fontSize: 26,
-                                        color: colors[index % colors.length],
-                                    }}
-                                />
+                                <TagIcon
+                                sx={{
+                                    fontSize: 20,
+                                    color: colors[index % colors.length],
+                                }}
+                            />
                                 <Typography sx={{ flexGrow: 1, fontSize: "14px" }}>
                                     {tag.name}
                                 </Typography>
@@ -159,14 +172,9 @@ const TagChart: React.FC = () => {
                         ))}
                     </List>
                 </Box>
-
-
             </Box>
         </Box>
-
-
     );
-
 };
 
 export default TagChart;
