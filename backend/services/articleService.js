@@ -119,7 +119,7 @@ const createArticle = async (articleData, articleSlug, email) => {
     return { message: "Article created successfully", article: transformedArticle };
 };
 
-//update article
+//delete article
 const deleteArticle = async (slug) => {
     const article = await Article.findOne({ where: { slug: slug } });
     if (!article) {
@@ -132,8 +132,6 @@ const deleteArticle = async (slug) => {
             body: ["Article deleted successfully"]
         }
     }
-
-
 }
 
 //upadte article
@@ -171,7 +169,6 @@ const updateArticle = async (slug, articleData, user) => {
 
 
     const { title, description, body, tagList } = articleData.article;
-
 
     if (title) {
         article.title = title;
