@@ -2,8 +2,12 @@ import { Box, TextField, Typography, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getUser } from "../Services/getUser";
 import { updateUser } from "../Services/updateUser";
+type Props = {
+    setUserData: (userData: any, isAuth?: boolean) => void;
+};
 
-export const ProfileSettings = () => {
+
+export const ProfileSettings: React.FC<Props> = ({ setUserData }) => {
     const [profileData, setProfileData] = useState<any>({
         username: "",
         email: "",
@@ -22,6 +26,7 @@ export const ProfileSettings = () => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -44,6 +49,17 @@ export const ProfileSettings = () => {
 
             alert("Profile updated successfully");
             console.log("Updated user:", data);
+
+            setUserData(
+                {
+                    username: data.username,
+                    email: data.email,
+                    bio: data.bio,
+                    image: data.profilePictureUrl,
+                    token: data.token || localStorage.getItem("token"),
+                },
+                true
+            );
 
             setCurrentPasswordError("");
             setNewPasswordError("");
