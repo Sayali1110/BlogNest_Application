@@ -24,9 +24,10 @@ import Dashboard from "./Dashboard";
 
 type Props = {
   setUserData: (userData: any, isAuth?: boolean) => void;
+
 };
 
-const Home: React.FC<Props> = ({ setUserData }) => {
+const Home: React.FC<Props> = ({ setUserData}) => {
   const [page, setPage] = useState(1);
   const userInfo = useContext(UserContext);
   const [articles, setArticles] = useState<any[]>([]); // 3 articles on one page 

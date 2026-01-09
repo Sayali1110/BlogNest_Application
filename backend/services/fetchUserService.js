@@ -27,11 +27,16 @@ const updateUser = async (email, updates) => {
     if (bio) user.bio = bio;
     if (profilePictureUrl) user.image = profilePictureUrl;
 
-    if (currentPassword && newPassword && confirmPassword) {
+    if (currentPassword || newPassword || confirmPassword) {
 
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
             throw new Error("Current password is incorrect");
+        }
+
+        if(newPassword && !confirmPassword){
+             throw new Error("Need to enter confirm password");
+
         }
 
         if (newPassword !== confirmPassword) {

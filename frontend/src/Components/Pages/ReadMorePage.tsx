@@ -183,6 +183,9 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
         };
         fetchComments();
     }, []);
+console.log("Data at ReadMorePage:", article);
+
+
 
 
     return (
@@ -204,12 +207,12 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
 
                 <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" lineHeight={0.5} mt={3} mb={-1}>
                     <Avatar
-                        src={article.author.image || ''}
-                        alt={article.author.username}
+                        src={article?.author?.image || ''}
+                        alt={article?.author?.username || 'Author'}
                         sx={{ width: 40, height: 40 }}
                     />
                     <Box>
-                        <Typography fontWeight="bold" align='left'>{article.author.username}</Typography>
+                        <Typography fontWeight="bold" align='left'>{article?.author?.username}</Typography>
                         <Typography variant="caption" >
                             {new Date(article.createdAt).toLocaleDateString('en-US', {
                                 year: 'numeric',
@@ -219,7 +222,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                         </Typography>
                     </Box>
 
-                    {username === article.author.username ? (
+                    {username === article?.author?.username ? (
                         <Box ml={2} display="flex" gap={1}>
                             <Button variant="outlined" size="small" sx={{ backgroundColor: "white" }} onClick={handleUpdate}>Edit Article</Button>
                             <Button variant="outlined" size="small" color="error" onClick={handleDelete}>Delete Article</Button>
@@ -240,7 +243,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                                 value={followersCount}
                                 onClick={handleToggleFollow}
                             >
-                                {isFollowing ? `-Unfollow` : `+ Follow`} {article.author.username} ({followersCount})
+                                {isFollowing ? `-Unfollow` : `+ Follow`} {article?.author?.username} ({followersCount})
                             </Button>
 
                             <Button
@@ -316,7 +319,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                         <p style={{ textAlign: 'right' }}><strong>Date :</strong> {new Date(article.createdAt).toLocaleDateString()}</p>
                         <h2 style={{ textAlign: 'center', marginBottom: 30 }}>{article.title}</h2>
                         <hr />
-                        <p style={{ marginTop: 10 }}><strong>Author :</strong> {article.author.username}</p>
+                        <p style={{ marginTop: 10 }}><strong>Author :</strong> {article?.author?.username}</p>
                         <p><strong>Description :</strong> {article.description}</p>
                         <p><strong>Content </strong></p>
                         <p>{article.body}</p>
@@ -334,6 +337,7 @@ export const ReadMorePage: React.FC<Props> = ({ setUserData }) => {
                 </Typography>
 
                 <Box mt={4} mb={4} display="flex" flexWrap="wrap">
+
                     {article.tagList.map((tag: any, index: number) =>
                         <Chip
                             key={index}

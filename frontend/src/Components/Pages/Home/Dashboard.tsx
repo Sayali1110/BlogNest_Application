@@ -12,22 +12,21 @@ const Dashboard: React.FC = () => {
 
                 <Stack direction="row" spacing={3}>
 
-                    <Card sx={{borderRadius: 3}} >
+               <Card sx={{ borderRadius: 3, height: 400 }}>
                         <TagChart />
                     </Card>
 
-                   <Card sx={{borderRadius: 3}} >
                         <MostLikedArticles />
-                    </Card>
+                
             
                 </Stack>
 
                 <Stack direction="row" spacing={3}>
-                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3, height: 500 }}>
+                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3, height: 350 }}>
                         <CardContent>
                             <Typography
                                 variant="h6"
-                                sx={{ color: "#689F38", fontWeight: 550, mb: 1.5 }}
+                                sx={{ color: "#689F38", fontWeight: 550, mb: 1.5 ,  fontSize:17 }}
                             >
                                 Download Overview
                             </Typography>
@@ -37,11 +36,11 @@ const Dashboard: React.FC = () => {
                         </CardContent>
                     </Card>
 
-                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3, height: 500 }}>
+                    <Card sx={{ flex: 1, borderRadius: 3, boxShadow: 3, height: 350 }}>
                         <CardContent>
                             <Typography
                                 variant="h6"
-                                sx={{ color: "#689F38", fontWeight: 550, mb: 1.5 }}
+                                sx={{ color: "#689F38", fontWeight: 550, mb: 1.5, fontSize:17 }}
                             >
                                 Download Activity
                             </Typography>

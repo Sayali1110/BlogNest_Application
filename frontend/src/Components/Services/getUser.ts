@@ -2,7 +2,6 @@ import axios from "axios";
 import { Main_URL } from "../constants";
 
 export const getUser = async () => {
-  console.log("in get user function");
   const token = localStorage.getItem("token");
 
   if (!token) return null;
@@ -12,6 +11,7 @@ export const getUser = async () => {
       Authorization: `Token ${token}`
     }
   });
+
 
   return response.data.user || response.data;
 };
