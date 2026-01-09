@@ -124,22 +124,14 @@ router.put('/:slug', async (req, res) => {
     console.log("in article route");
 
     const updatedArticle = await updateArticle(slug, articleData, user);
-
     const newSlug = updatedArticle.slug;
 
-    console.log("updated artilcle");
-
     console.log("new slug", newSlug);
-
-    console.log("in get comments");
-
 
     return res.json({
       message: "Article updated successfully",
       article: updatedArticle,
-
     });
-
   }
   catch (error) {
     console.error("error", error);
