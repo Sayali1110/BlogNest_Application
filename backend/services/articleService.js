@@ -41,7 +41,7 @@ const likeArticle = async (slug, userID) => {
         favorites: updatedFavorites,
     });
 
-    console.log("updated favoritesArray", favoritesArray);
+    console.log("updated favoritesArray", updatedFavorites);
 
     return {
         article: {

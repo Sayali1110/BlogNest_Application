@@ -6,7 +6,7 @@ const { fetchDownloadData, fetchData, downloadActivity, totalLikes } = require('
 router.get('/pieChart', async (req, res) => {
     try {
         const data = await fetchDownloadData();
-        console.log("data after fethcing", data);
+        //console.log("data after fethcing", data);
         res.status(200).json(data);
     } catch (error) {
         console.error("error fetching total articles data");
@@ -18,7 +18,7 @@ router.get('/pieChart', async (req, res) => {
 router.get('/barChart', async (req, res) => {
     try {
         const data = await fetchData();
-        console.log("data after fethcing", data);
+       // console.log("data after fethcing", data);
         res.status(200).json(data);
     } catch (error) {
         console.error("error fetching downloaded articles data");
@@ -29,7 +29,7 @@ router.get('/barChart', async (req, res) => {
 router.get('/downloadActivity', async (req, res) => {
     try {
         const data = await downloadActivity();
-        console.log("all download history", data);
+        //console.log("all download history", data);
         res.status(200).json(data);
     } catch (error) {
         console.error("error fetching downloaded articles activity");
@@ -41,7 +41,7 @@ router.get('/downloadActivity', async (req, res) => {
 router.get('/mostLikedArticles', async (req, res) => {
     try {
         const data = await totalLikes();
-        console.log("all download history", data);
+        //console.log("all download history", data);
         res.status(200).json(data);
     } catch (error) {
         console.error("error fethcing most liked articles");
